@@ -1,0 +1,120 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import './screens/home_screen.dart';
+import './screens/auth_screen.dart';
+import './screens/onBoarding_screens/onBoarding_screens.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _showOnboarding = true;
+  bool _isLoading = true;
+
+  void setShowOnboarding(bool show) {
+    setState(() {
+      _showOnboarding = show;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus();
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    print('Checking onboarding status...');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+
+    if (hasSeenOnboarding) {
+      setState(() {
+        _showOnboarding = false;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+      print('Onboarding status checked. _isLoading: $_isLoading');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Sniffer',
+      routes: {
+        '/auth': (ctx) => AuthScreen(),
+      },
+      theme: ThemeData(
+        buttonTheme: ButtonTheme.of(context).copyWith(
+          buttonColor: Colors.pink,
+          textTheme: ButtonTextTheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
+            .copyWith(background: Colors.pink)
+            .copyWith(secondary: Colors.deepPurple),
+      ),
+      home: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _showOnboarding
+              ? onBoardingScreens(setShowOnboarding)
+              : StreamBuilder(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder: (ctx, userSnapshot) {
+                    if (userSnapshot.hasData) {
+                      User user = userSnapshot.data as User;
+
+                      // Check if the user's email address is verified
+                      if (user.emailVerified) {
+                        return HomeScreen();
+                      } else {
+                        // Show a message or a screen asking the user to verify their email
+                        return Scaffold(
+                          appBar: AppBar(title: Text('Email Verification')),
+                          body: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Please verify your email address.'),
+                                TextButton(
+                                  onPressed: () async {
+                                    await user.sendEmailVerification();
+                                  },
+                                  child: Text('Resend Verification Email'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await user.reload(); // Reload user data
+                                    user = FirebaseAuth.instance
+                                        .currentUser!; // Update user object
+                                    setState(
+                                        () {}); // Rebuild the widget to update the UI
+                                  },
+                                  child: Text('Check Verification'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                    return AuthScreen();
+                  },
+                ),
+    );
+  }
+}

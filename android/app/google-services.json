@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "793730118238",
+    "project_id": "sniffer-de62b",
+    "storage_bucket": "sniffer-de62b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793730118238:android:f2313a1ae36572ec12bacf",
+        "android_client_info": {
+          "package_name": "com.example.sniffer_pettracking_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "793730118238-6oj0en3m6c8sh9svqk91k20qo01v6lb6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNhuwIg05SsZWdE1VcQG6soT6f631xcFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793730118238-6oj0en3m6c8sh9svqk91k20qo01v6lb6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
