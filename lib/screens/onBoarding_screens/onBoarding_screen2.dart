@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class onBoardingScreen2 extends StatelessWidget {
+  static const routeName = '/onBoardingScreen2';
+
   const onBoardingScreen2({Key? key}) : super(key: key);
 
   @override

@@ -7,6 +7,8 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  static const routeName = '/user-profile';
+
   final user = FirebaseAuth.instance.currentUser!;
 
   @override

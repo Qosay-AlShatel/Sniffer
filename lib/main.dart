@@ -1,10 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import './providers/pets.dart';
 import './screens/home_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/onBoarding_screens/onBoarding_screens.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/fences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,70 +55,83 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sniffer',
-      routes: {
-        '/auth': (ctx) => AuthScreen(),
-      },
-      theme: ThemeData(
-        buttonTheme: ButtonTheme.of(context).copyWith(
-          buttonColor: Colors.pink,
-          textTheme: ButtonTextTheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => Fences()),
+        Provider<FirebaseAuth>.value(value: FirebaseAuth.instance),
+        ChangeNotifierProxyProvider<FirebaseAuth, Pets>(
+          create: (ctx) => Pets(''),
+          update: (ctx, auth, previousPets) => Pets(auth.currentUser!.uid),
         ),
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
-            .copyWith(background: Colors.pink)
-            .copyWith(secondary: Colors.deepPurple),
-      ),
-      home: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _showOnboarding
-              ? onBoardingScreens(setShowOnboarding)
-              : StreamBuilder(
-                  stream: FirebaseAuth.instance.authStateChanges(),
-                  builder: (ctx, userSnapshot) {
-                    if (userSnapshot.hasData) {
-                      User user = userSnapshot.data as User;
+      ],
+      child: MaterialApp(
+        title: 'Sniffer',
+        routes: {
+          AuthScreen.routeName: (ctx) => AuthScreen(),
+          HomeScreen.routeName: (ctx) => HomeScreen(),
+          onBoardingScreens.routeName: (ctx) =>
+              onBoardingScreens(setShowOnboarding),
+        },
+        theme: ThemeData(
+          buttonTheme: ButtonTheme.of(context).copyWith(
+            buttonColor: Colors.pink,
+            textTheme: ButtonTextTheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
+              .copyWith(background: Colors.pink)
+              .copyWith(secondary: Colors.deepPurple),
+        ),
+        home: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : _showOnboarding
+                ? onBoardingScreens(setShowOnboarding)
+                : StreamBuilder(
+                    stream: FirebaseAuth.instance.authStateChanges(),
+                    builder: (ctx, userSnapshot) {
+                      if (userSnapshot.hasData) {
+                        User user = userSnapshot.data as User;
 
-                      // Check if the user's email address is verified
-                      if (user.emailVerified) {
-                        return HomeScreen();
-                      } else {
-                        // Show a message or a screen asking the user to verify their email
-                        return Scaffold(
-                          appBar: AppBar(title: Text('Email Verification')),
-                          body: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('Please verify your email address.'),
-                                TextButton(
-                                  onPressed: () async {
-                                    await user.sendEmailVerification();
-                                  },
-                                  child: Text('Resend Verification Email'),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    await user.reload(); // Reload user data
-                                    user = FirebaseAuth.instance
-                                        .currentUser!; // Update user object
-                                    setState(
-                                        () {}); // Rebuild the widget to update the UI
-                                  },
-                                  child: Text('Check Verification'),
-                                ),
-                              ],
+                        // Check if the user's email address is verified
+                        if (user.emailVerified) {
+                          return HomeScreen();
+                        } else {
+                          // Show a message or a screen asking the user to verify their email
+                          return Scaffold(
+                            appBar: AppBar(title: Text('Email Verification')),
+                            body: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Please verify your email address.'),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await user.sendEmailVerification();
+                                    },
+                                    child: Text('Resend Verification Email'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await user.reload(); // Reload user data
+                                      user = FirebaseAuth.instance
+                                          .currentUser!; // Update user object
+                                      setState(
+                                          () {}); // Rebuild the widget to update the UI
+                                    },
+                                    child: Text('Check Verification'),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       }
-                    }
-                    return AuthScreen();
-                  },
-                ),
+                      return AuthScreen();
+                    },
+                  ),
+      ),
     );
   }
 }

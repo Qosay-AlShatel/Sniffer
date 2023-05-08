@@ -5,6 +5,8 @@ import './onBoarding_Screen1.dart';
 import './onBoarding_screen2.dart';
 
 class onBoardingScreens extends StatefulWidget {
+  static const routeName = '/onBoardingScreens';
+
   final Function setShowOnboarding;
 
   onBoardingScreens(this.setShowOnboarding);

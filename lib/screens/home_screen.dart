@@ -1,9 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+
+import '../widgets/new_pet_form.dart';
 import '../screens/user_profile_screen.dart';
+import '../widgets/pets_grid.dart';
+import '../widgets/fences_grid.dart';
+import '../widgets/new_fence_form.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const routeName = '/homeScreen';
+
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
@@ -11,8 +18,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final refreshNotifier = ValueNotifier<bool>(false);
+
   final user = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 0;
+
+  FloatingActionButton? _getFloatingActionButton() {
+    if (_selectedIndex == 1) {
+      return FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => NewPetForm(onPetAdded: () {
+                      refreshNotifier.value = !refreshNotifier.value;
+                    })),
+          );
+        },
+        child: Icon(Icons.add),
+      );
+    } else if (_selectedIndex == 2) {
+      return FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => NewFenceForm(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      );
+    } else {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,50 +62,53 @@ class _HomeScreenState extends State<HomeScreen> {
       Center(
         child: Text('Home'),
       ),
-      Center(
-        child: Text('Pets'),
-      ),
-      Center(
-        child: Text('Fences'),
-      ),
+      PetsGrid(refreshNotifier: refreshNotifier),
+      FencesGrid(),
       Center(
         child: Column(),
       ),
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Color.fromRGBO(192, 192, 192, 1.0),
       body: Container(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    iconSize: height * 0.05,
-                    color: Colors.black,
-                    icon: Icon(Icons.logout),
-                    onPressed: () => FirebaseAuth.instance.signOut()),
-                Container(
-                  height: height * .25,
-                  width: width * 0.25,
-                  child: Image.asset('assets/images/2.png'),
+            SafeArea(
+              child: Container(
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                        iconSize: height * 0.05,
+                        color: Colors.black,
+                        icon: Icon(Icons.logout),
+                        onPressed: () => FirebaseAuth.instance.signOut()),
+                    Container(
+                      height: height * .25,
+                      width: width * 0.25,
+                      child: Image.asset('assets/images/2.png'),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.account_circle_rounded),
+                      color: Colors.black,
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => UserProfileScreen()));
+                      },
+                      iconSize: height * 0.05,
+                    )
+                  ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.account_circle_rounded),
-                  color: Colors.black,
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => UserProfileScreen()));
-                  },
-                  iconSize: height * 0.05,
-                )
-              ],
+              ),
             ),
-            _pages[_selectedIndex],
+            Expanded(
+                child: Container(
+                    color: Colors.white, child: _pages[_selectedIndex])),
           ],
         ),
       ),
@@ -97,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+      floatingActionButton: _getFloatingActionButton(),
     );
   }
 }

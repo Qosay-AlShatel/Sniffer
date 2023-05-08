@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/auth_form.dart';
 
 class AuthScreen extends StatefulWidget {
+  static const routeName = '/auth';
+
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
