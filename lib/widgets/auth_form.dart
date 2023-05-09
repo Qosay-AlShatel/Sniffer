@@ -332,7 +332,9 @@ class _AuthFormState extends State<AuthForm> {
                       onPressed: () {
                         widget.forgotPasswordCallback(context);
                       },
-                      child: Text('Forgot Password?'),
+                      child: Text('Forgot Password?',
+                        style: TextStyle(color: Colors.deepPurple),
+                      ),
                     ),
                 ],
               ),

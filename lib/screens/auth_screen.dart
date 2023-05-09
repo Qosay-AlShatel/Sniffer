@@ -98,7 +98,8 @@ class _AuthScreenState extends State<AuthScreen> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'Please enter your email address to receive a password reset link.'),
+                    'Please enter your email address to receive a password reset link.',
+                  style: TextStyle(color: Colors.black),),
                 TextField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -109,18 +110,23 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: Colors.deepPurple)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: Text('Send Email'),
+            TextButton(style:  TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.deepPurple,
+              padding: const EdgeInsets.all(8.0)
+        ),
+              child: Text('Send Email',),
               onPressed: () async {
                 await _sendForgotPasswordEmail(emailController.text);
                 Navigator.of(context).pop();
               },
             ),
+
           ],
         );
       },

@@ -38,7 +38,7 @@ class _FencesGridState extends State<FencesGrid> {
     }
 
     return _isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator(color: Colors.deepPurple[300],))
         : GridView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: fences.length,

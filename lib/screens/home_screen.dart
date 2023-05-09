@@ -58,9 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
     double width = MediaQuery.of(context).size.width;
 
     final List<Widget> _pages = [
-      //YOU CAN REPLACE THE CENTER WIDGETS WITH YOUR CUSTOM WIDGET OR CLASS NAME
       Center(
-        child: Text('Home'),
+        child: Text('Home')
       ),
       PetsGrid(refreshNotifier: refreshNotifier),
       FencesGrid(),
