@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sniffer_pettracking_app/widgets/pet_details.dart';
 import '../providers/pet.dart';
 import '../providers/pets.dart';
 import './pet_view.dart';
@@ -55,9 +56,12 @@ class _PetsGridState extends State<PetsGrid> {
           return GridView.builder(
             padding: const EdgeInsets.all(10.0),
             itemCount: pets.length,
-            itemBuilder: (ctx, i) => ChangeNotifierProvider<Pet>.value(
-              value: pets[i],
-              child: PetView(),
+            itemBuilder: (ctx, i) => GestureDetector(
+              onTap:()=> Navigator.push(context, MaterialPageRoute(builder: (context) => PetDetails(pet: pets[i]))),
+              child: ChangeNotifierProvider<Pet>.value(
+                value: pets[i],
+                child: PetView(),
+              ),
             ),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,

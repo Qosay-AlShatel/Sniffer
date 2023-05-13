@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/fences.dart';
 import './fence_view.dart';
+import 'fence_details.dart';
 
 class FencesGrid extends StatefulWidget {
   const FencesGrid({Key? key}) : super(key: key);
@@ -42,7 +43,9 @@ class _FencesGridState extends State<FencesGrid> {
         : GridView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: fences.length,
-            itemBuilder: (ctx, i) => FenceView(fence: fences[i]),
+            itemBuilder: (ctx, i) => GestureDetector(
+              onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => FenceDetails(fence: fences[i]))),
+                child: FenceView(fence: fences[i])),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
               childAspectRatio: 3 / 2,

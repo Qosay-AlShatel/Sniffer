@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(192, 192, 192, 1.0),
+      //backgroundColor: Color.fromRGBO(192, 192, 192, 1.0),
       body: Container(
         width: double.infinity,
         child: Column(
@@ -78,12 +78,19 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             SafeArea(
               child: Container(
-                height: 100,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(192, 192, 192, 1.0),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                    )
+                ),
+                height: height*0.08,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                        iconSize: height * 0.05,
+                        iconSize: height * 0.04,
                         color: Colors.black,
                         icon: Icon(Icons.logout),
                         onPressed: () => FirebaseAuth.instance.signOut()),

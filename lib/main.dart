@@ -75,15 +75,15 @@ class _MyAppState extends State<MyApp> {
         },
         theme: ThemeData(
           buttonTheme: ButtonTheme.of(context).copyWith(
-            buttonColor: Colors.pink,
+            buttonColor: Colors.deepPurple[300],
             textTheme: ButtonTextTheme.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
-              .copyWith(background: Colors.pink)
-              .copyWith(secondary: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepPurple)
+              .copyWith(background: Colors.deepPurple)
+              .copyWith(secondary: Colors.deepPurple[300]),
         ),
         home: _isLoading
             ? Center(child: CircularProgressIndicator())

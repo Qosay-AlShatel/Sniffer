@@ -31,8 +31,8 @@ class _AuthFormState extends State<AuthForm> {
   var _isLogin = true;
   String _userEmail = '';
   String _userPassword = '';
-  String _userFirstName = 'Mohammed';
-  String _userLastName = 'Al-Zahrani';
+  String _userFirstName = '';
+  String _userLastName = '';
 
   bool confirmPasswordMatch() {
     bool passwordRequirements(String password) {

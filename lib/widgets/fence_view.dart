@@ -17,7 +17,7 @@ class FenceView extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
+          backgroundColor: Colors.deepPurple[200],
           title: Text(
             fence.title,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

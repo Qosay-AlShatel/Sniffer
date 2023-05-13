@@ -232,7 +232,13 @@ class _NewFenceFormState extends State<NewFenceForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
         title: Text('Add New Fence'),
+        leading: IconButton(onPressed: ()=> Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back_ios_new_rounded),),
         actions: [
           IconButton(
               icon: Icon(Icons.check),
@@ -276,7 +282,9 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Fence Title',
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                          ),
+                          focusColor: Colors.deepPurple.withOpacity(0.2)
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -291,7 +299,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       SizedBox(height: 10),
                       Text(
                         'Tap on the map to add points for your fence.',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple[300]),
                       ),
                     ],
                   ),

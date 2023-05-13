@@ -17,19 +17,22 @@ class PetView extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                pet.name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '${pet.age} years old',
-                style: TextStyle(fontSize: 14),
-              ),
-            ],
+          backgroundColor: Colors.deepPurple[200],
+          title: Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  pet.name,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '${pet.age} years old',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -31,6 +31,21 @@ class _NewPetFormState extends State<NewPetForm> {
   int? _age;
   String? _description;
 
+  Future<void> _selectImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final pickedImageFile = await _picker.pickImage(
+      imageQuality: 50,
+      maxWidth: 150,
+      source: ImageSource.gallery,
+    );
+
+    setState(() {
+      if (pickedImageFile != null) {
+        _pickedImage = File(pickedImageFile.path);
+      }
+    });
+  }
+
   Future<String> _uploadImage(File imageFile) async {
     String fileName = 'pets/${DateTime.now().toIso8601String()}.jpg';
     final storageRef = FirebaseStorage.instance.ref().child(fileName);
@@ -88,7 +103,7 @@ class _NewPetFormState extends State<NewPetForm> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields and take a photo')),
+        SnackBar(content: Text('Please fill in all fields and upload a photo')),
       );
     }
   }
@@ -118,11 +133,20 @@ class _NewPetFormState extends State<NewPetForm> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.black,
             title: Text('New Pet'),
+            leading: IconButton(onPressed: ()=> Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back_ios_new_rounded),),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -132,12 +156,35 @@ class _NewPetFormState extends State<NewPetForm> {
                 children: [
                   Center(
                     child: _pickedImage == null
-                        ? Text('No image selected')
+                        ? ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        width: width*0.2,
+                          height: height*0.1,
+                          color: Colors.grey[200],
+                          child: IconButton(icon: Icon(Icons.camera_alt_outlined),
+                            onPressed: _takePhoto,
+                            )),
+                    ) 
                         : Image.file(_pickedImage!),
                   ),
-                  ElevatedButton(
-                    onPressed: _takePhoto,
-                    child: Text('Take a Photo'),
+                  SizedBox(height:20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape:
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100)
+                            ),
+                          padding: EdgeInsets.symmetric(vertical: height*0.02, horizontal: width*0.04),
+                          elevation: 0
+                        ),
+                        onPressed: _selectImageFromGallery,
+                        child: Text('Upload photo from gallery'),
+                      ),
+                    ],
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Pet Name'),
@@ -174,9 +221,27 @@ class _NewPetFormState extends State<NewPetForm> {
                     onSaved: (value) => _description = value,
                   ),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _addPet,
-                    child: Text('Add Pet'),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width*0.25),
+                    child: ElevatedButton(
+                      onPressed: _addPet,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Add Pet'),
+                          Icon(Icons.pets_rounded, size: 15,)
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: Colors.deepPurple[100],
+                        foregroundColor: Colors.deepPurple[500],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: height*0.02, horizontal: width*0.05),
+                      ),
+                    ),
                   ),
                 ],
               ),
