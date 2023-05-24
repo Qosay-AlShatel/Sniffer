@@ -20,13 +20,7 @@ class _FenceDetailsState extends State<FenceDetails> {
     try{
       await FirebaseFirestore.instance
           .collection('fences')
-          .where('creatorId', isEqualTo: widget.fence.creatorId)
-          .get()
-          .then((snapshot) {
-        for (DocumentSnapshot doc in snapshot.docs) {
-          doc.reference.delete();
-        }
-      });
+          .doc(widget.fence.creatorId).delete();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Fence deleted successfully!'),
@@ -105,21 +99,23 @@ class _FenceDetailsState extends State<FenceDetails> {
               icon: Icon(Icons.close_rounded),
               onPressed: ()=>Navigator.of(context).pop()),
           actions: [
-            Container(
-              padding: EdgeInsets.all(3),
-              child: IconButton(
-                onPressed: _deleteFenceDialog,
-                icon: Icon(Icons.delete_outline_rounded),),
-              decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0,1),
-                      blurRadius: 5,
-                      color: Colors.deepPurple.withOpacity(0.3),
-                    )
-                  ]
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Container(
+                child: IconButton(
+                  onPressed: _deleteFenceDialog,
+                  icon: Icon(Icons.delete_outline_rounded),),
+                decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0,1),
+                        blurRadius: 5,
+                        color: Colors.deepPurple.withOpacity(0.3),
+                      )
+                    ]
+                ),
               ),
             ),
           ]

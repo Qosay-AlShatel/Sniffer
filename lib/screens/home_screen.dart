@@ -78,8 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             SafeArea(
               child: Container(
+                padding: EdgeInsets.only(top: 8),
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(192, 192, 192, 1.0),
+                  color: Colors.white, //Color.fromRGBO(192, 192, 192, 1.0),
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       height: height * .25,
                       width: width * 0.25,
-                      child: Image.asset('assets/images/2.png'),
+                      child: Image.asset('assets/images/1.png'),
                     ),
                     IconButton(
                       icon: Icon(Icons.account_circle_rounded),

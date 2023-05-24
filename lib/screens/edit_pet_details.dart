@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../providers/pet.dart';
 
 class EditPetProfile extends StatefulWidget {
@@ -15,6 +18,13 @@ class EditPetProfile extends StatefulWidget {
 class _EditPetProfileState extends State<EditPetProfile> {
   final _currentUser = FirebaseAuth.instance.currentUser!;
 
+  bool _isLoading = false;
+
+  void _setLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController; //= TextEditingController();
   late TextEditingController _ageController;// = TextEditingController();
@@ -55,7 +65,44 @@ class _EditPetProfileState extends State<EditPetProfile> {
     });
   }
 
+  File? pickedImage;
+  Future<void> _selectImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final pickedImageFile = await _picker.pickImage(
+      imageQuality: 50,
+      maxWidth: 150,
+      source: ImageSource.gallery,
+    );
+
+    setState(() {
+      if (pickedImageFile != null) {
+        pickedImage = File(pickedImageFile.path);
+      }
+    });
+  }
+
+  Future<String> _uploadImage(File imageFile) async {
+    String fileName = 'users/${DateTime.now().toIso8601String()}.jpg';
+    final storageRef = FirebaseStorage.instance.ref().child(fileName);
+
+    final UploadTask uploadTask = storageRef.putFile(imageFile);
+
+    await uploadTask.whenComplete(() {});
+    final String downloadUrl = await storageRef.getDownloadURL();
+
+    return downloadUrl;
+  }
   Future<void> _saveChanges() async {
+    String imageUrl;
+    try {
+      imageUrl = await _uploadImage(pickedImage!);
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading image: $error')),
+      );
+      _setLoading(false);
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       try {
         final name = _nameController.text.trim();
@@ -81,6 +128,13 @@ class _EditPetProfileState extends State<EditPetProfile> {
               .collection('pets')
               .doc(widget.pet.id)
               .update({'description': desc});
+        }
+
+        if(imageUrl.isNotEmpty){
+          FirebaseFirestore.instance
+              .collection('pets')
+              .doc(widget.pet.id)
+              .update({'imageUrl': imageUrl});
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,23 +196,46 @@ class _EditPetProfileState extends State<EditPetProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 200,
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.transparent,
-                        child: Image.network(widget.pet.imageUrl,
-                          fit: BoxFit.cover,
+                    Stack(children: [
+                      Container(
+                        width: 150,
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage:
+                          NetworkImage(widget.pet.imageUrl),
+                        ),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: Colors.deepPurple.withOpacity(0.5),
+                                width: 5.0)),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          child: IconButton(
+                            onPressed: _selectImageFromGallery,
+                            icon: Icon(
+                              Icons.camera_alt_outlined,
+                            ),
+                            color: Colors.white,
+                          ),
+                          decoration: BoxDecoration(
+                              color: Colors.deepPurple.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(50),
+                              boxShadow: [
+                                BoxShadow(
+                                  offset: Offset(0,1),
+                                  blurRadius: 5,
+                                  color: Colors.deepPurple.withOpacity(0.3),
+                                )
+                              ]
+                          ),
                         ),
                       ),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.deepPurple.withOpacity(0.5),
-                              width: 5.0
-                          )
-                      ),
-                    ),
+                    ]),
                     SizedBox( height: 10),
                     SizedBox(
                         width: width*0.4,
