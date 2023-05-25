@@ -1,8 +1,6 @@
 import 'dart:ui' as ui;
-import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
-
 import '../providers/fences.dart';
 import '../models/fence.dart';
 
@@ -48,30 +44,6 @@ class _NewFenceFormState extends State<NewFenceForm> {
 
   GoogleMapController? _mapController;
 
-  Future<void> _captureAndUploadMapImage() async {
-    // Add a delay before capturing the image
-    await Future.delayed(Duration(milliseconds: 500));
-
-    RenderRepaintBoundary boundary =
-        _mapKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage();
-    ByteData byteData =
-        await image.toByteData(format: ui.ImageByteFormat.png) as ByteData;
-    Uint8List pngBytes = byteData.buffer.asUint8List();
-
-    // Save image to device
-    Directory tempDir = await getTemporaryDirectory();
-    File file = await new File('${tempDir.path}/map_snapshot.png').create();
-    await file.writeAsBytes(pngBytes);
-
-    // Upload image to Firebase Storage
-    String fileName = 'fences/map_snapshot_${DateTime.now()}.png';
-    Reference firebaseStorageRef =
-        FirebaseStorage.instance.ref().child(fileName);
-    UploadTask uploadTask = firebaseStorageRef.putFile(file);
-    await uploadTask;
-  }
-
   Future<LatLng> _getCurrentLocation() async {
     // Request location permission
     PermissionStatus permissionStatus = await Permission.location.request();
@@ -88,7 +60,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
   }
 
   void _onMapTapped(LatLng latLng) {
-    if (_fenceCoordinates.length >= 6) {
+    if (_fenceCoordinates.length >= 8) {
       // Only allow six points maximum
       return;
     }
@@ -180,6 +152,43 @@ class _NewFenceFormState extends State<NewFenceForm> {
 
     _formKey.currentState!.save();
 
+    // Before taking the snapshot, adjust the map view to include the entire geofence.
+    if (_mapController != null && _fenceCoordinates.isNotEmpty) {
+      // Compute the bounds of the geofence.
+      double southwestLatitude = _fenceCoordinates[0].latitude;
+      double southwestLongitude = _fenceCoordinates[0].longitude;
+      double northeastLatitude = _fenceCoordinates[0].latitude;
+      double northeastLongitude = _fenceCoordinates[0].longitude;
+
+      for (var coordinate in _fenceCoordinates) {
+        if (coordinate.latitude <= southwestLatitude) {
+          southwestLatitude = coordinate.latitude;
+        }
+        if (coordinate.longitude <= southwestLongitude) {
+          southwestLongitude = coordinate.longitude;
+        }
+        if (coordinate.latitude >= northeastLatitude) {
+          northeastLatitude = coordinate.latitude;
+        }
+        if (coordinate.longitude >= northeastLongitude) {
+          northeastLongitude = coordinate.longitude;
+        }
+      }
+
+      LatLngBounds bounds = LatLngBounds(
+        southwest: LatLng(southwestLatitude, southwestLongitude),
+        northeast: LatLng(northeastLatitude, northeastLongitude),
+      );
+
+      // Update the map camera to include the bounds.
+      CameraUpdate cameraUpdate =
+          CameraUpdate.newLatLngBounds(bounds, 120); // 50 pixels padding
+      await _mapController!.moveCamera(cameraUpdate);
+
+      // Allow some time for map to complete camera animation
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+
     // Take a snapshot of the map
     Uint8List? mapSnapshotBytes = await _mapController!.takeSnapshot();
 
@@ -237,8 +246,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
         title: Text('Add New Fence'),
-        leading: IconButton(onPressed: ()=> Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios_new_rounded),),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back_ios_new_rounded),
+        ),
         actions: [
           IconButton(
               icon: Icon(Icons.check),
@@ -281,11 +292,9 @@ class _NewFenceFormState extends State<NewFenceForm> {
                     children: [
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: 'Fence Title',
-                          border: OutlineInputBorder(
-                          ),
-                          focusColor: Colors.deepPurple.withOpacity(0.2)
-                        ),
+                            labelText: 'Fence Title',
+                            border: OutlineInputBorder(),
+                            focusColor: Colors.deepPurple.withOpacity(0.2)),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please enter a fence title';
@@ -299,7 +308,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       SizedBox(height: 10),
                       Text(
                         'Tap on the map to add points for your fence.',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple[300]),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple[300]),
                       ),
                     ],
                   ),
