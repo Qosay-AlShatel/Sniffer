@@ -95,7 +95,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             'last name': lastName,
           });
 
-          if(imageUrl.isNotEmpty){
+          if (imageUrl.isNotEmpty) {
             await _firestore.collection('users').doc(_currentUser.uid).update({
               'imageUrl': imageUrl,
             });
@@ -243,12 +243,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               borderRadius: BorderRadius.circular(50),
                               boxShadow: [
                                 BoxShadow(
-                                  offset: Offset(0,1),
+                                  offset: Offset(0, 1),
                                   blurRadius: 5,
                                   color: Colors.deepPurple.withOpacity(0.3),
                                 )
-                              ]
-                          ),
+                              ]),
                         ),
                       ),
                     ]),

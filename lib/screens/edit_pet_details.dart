@@ -25,10 +25,11 @@ class _EditPetProfileState extends State<EditPetProfile> {
       _isLoading = value;
     });
   }
+
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController; //= TextEditingController();
-  late TextEditingController _ageController;// = TextEditingController();
-  late TextEditingController _descController;// = TextEditingController();
+  late TextEditingController _ageController; // = TextEditingController();
+  late TextEditingController _descController; // = TextEditingController();
 
   @override
   void initState() {
@@ -39,20 +40,19 @@ class _EditPetProfileState extends State<EditPetProfile> {
     _nameController = TextEditingController(text: initialName);
     _ageController = TextEditingController(text: initialAge);
     _descController = TextEditingController(text: initialDesc);
-
-
   }
 
-  Future<void> _deletePet() async{
-    try{
-    await FirebaseFirestore.instance
-        .collection('pets')
-        .doc(widget.pet.id).delete();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Pet profile deleted successfully!'),
-      ),
-    );
+  Future<void> _deletePet() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pets')
+          .doc(widget.pet.id)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pet profile deleted successfully!'),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -92,6 +92,7 @@ class _EditPetProfileState extends State<EditPetProfile> {
 
     return downloadUrl;
   }
+
   Future<void> _saveChanges() async {
     String imageUrl;
     try {
@@ -109,28 +110,28 @@ class _EditPetProfileState extends State<EditPetProfile> {
         final age = _ageController.text.trim();
         final desc = _descController.text.trim();
 
-        if(name.isNotEmpty ) {
+        if (name.isNotEmpty) {
           FirebaseFirestore.instance
               .collection('pets')
               .doc(widget.pet.id)
               .update({'name': name});
         }
 
-        if(age.isNotEmpty ) {
+        if (age.isNotEmpty) {
           FirebaseFirestore.instance
               .collection('pets')
               .doc(widget.pet.id)
               .update({'age': int.tryParse(age)});
         }
 
-        if(desc.isNotEmpty ) {
+        if (desc.isNotEmpty) {
           FirebaseFirestore.instance
               .collection('pets')
               .doc(widget.pet.id)
               .update({'description': desc});
         }
 
-        if(imageUrl.isNotEmpty){
+        if (imageUrl.isNotEmpty) {
           FirebaseFirestore.instance
               .collection('pets')
               .doc(widget.pet.id)
@@ -150,8 +151,8 @@ class _EditPetProfileState extends State<EditPetProfile> {
         );
       }
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -162,31 +163,33 @@ class _EditPetProfileState extends State<EditPetProfile> {
           builder: (context) {
             return CupertinoAlertDialog(
               title: Text("Delete ${widget.pet.name}"),
-              content: Text("Are you sure you want to delete ${widget.pet.name}? This action is not reversible."),
+              content: Text(
+                  "Are you sure you want to delete ${widget.pet.name}? This action is not reversible."),
               actions: [
                 MaterialButton(
                   onPressed: _deletePet,
                   child: Text('Delete pet'),
                 ),
                 MaterialButton(
-                  onPressed: ()=> Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context),
                   child: Text('No'),
                 )
               ],
             );
-          }
-      );
+          });
     }
+
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
           centerTitle: true,
-          title: Text('P R O F I L E', style: TextStyle(color: Colors.deepPurple.shade300)),
+          title: Text('P R O F I L E',
+              style: TextStyle(color: Colors.deepPurple.shade300)),
           leading: IconButton(
               color: Colors.deepPurple.shade300,
               icon: Icon(Icons.close_rounded),
-              onPressed: ()=>Navigator.of(context).pop()),
+              onPressed: () => Navigator.of(context).pop()),
         ),
         body: SingleChildScrollView(
             child: Container(
@@ -202,8 +205,7 @@ class _EditPetProfileState extends State<EditPetProfile> {
                         child: CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.transparent,
-                          backgroundImage:
-                          NetworkImage(widget.pet.imageUrl),
+                          backgroundImage: NetworkImage(widget.pet.imageUrl),
                         ),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -227,27 +229,24 @@ class _EditPetProfileState extends State<EditPetProfile> {
                               borderRadius: BorderRadius.circular(50),
                               boxShadow: [
                                 BoxShadow(
-                                  offset: Offset(0,1),
+                                  offset: Offset(0, 1),
                                   blurRadius: 5,
                                   color: Colors.deepPurple.withOpacity(0.3),
                                 )
-                              ]
-                          ),
+                              ]),
                         ),
                       ),
                     ]),
-                    SizedBox( height: 10),
+                    SizedBox(height: 10),
                     SizedBox(
-                        width: width*0.4,
-                        child:
-                        Center(
+                        width: width * 0.4,
+                        child: Center(
                           child: Text('${widget.pet.name}',
                               style: TextStyle(
                                 color: Colors.black,
                                 //fontSize: 18
                               )),
-                        )
-                    ),
+                        )),
                     SizedBox(height: 30),
                     Form(
                       key: _formKey,
@@ -277,7 +276,8 @@ class _EditPetProfileState extends State<EditPetProfile> {
                           ),
                           SizedBox(height: 10.0),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Colors.grey[200],
@@ -298,7 +298,8 @@ class _EditPetProfileState extends State<EditPetProfile> {
                           ),
                           SizedBox(height: 10.0),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Colors.grey[200],
@@ -310,15 +311,17 @@ class _EditPetProfileState extends State<EditPetProfile> {
                                   key: ValueKey('description'),
                                   controller: _descController,
                                   decoration: InputDecoration(
-                                    labelText: 'Description',
-                                      border: InputBorder.none, hintText: 'Description'),
+                                      labelText: 'Description',
+                                      border: InputBorder.none,
+                                      hintText: 'Description'),
                                 ),
                               ),
                             ),
                           ),
                           SizedBox(height: 10.0),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Colors.grey[200],
@@ -332,39 +335,35 @@ class _EditPetProfileState extends State<EditPetProfile> {
                               child: Text('Save Changes'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.deepPurple.shade300,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 elevation: 0,
-                              )
-                          ),
+                              )),
                           Container(
-                            width: width*0.3,
+                            width: width * 0.3,
                             height: 36.0,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                              border: Border.all(
-                                color: Colors.deepPurple.shade300
-                              )
-
-                            ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8)),
+                                border: Border.all(
+                                    color: Colors.deepPurple.shade300)),
                             child: ElevatedButton(
-                                onPressed: _deleteDialog,
-                                child: Text('Delete pet',
-                                style: TextStyle(color: Colors.deepPurple[300])
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  elevation: 0,
-                                ),
+                              onPressed: _deleteDialog,
+                              child: Text('Delete pet',
+                                  style:
+                                      TextStyle(color: Colors.deepPurple[300])),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                elevation: 0,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ],
-                )
-            )
-        )
-    );
+                ))));
   }
 }

@@ -6,9 +6,9 @@ import '../providers/pets.dart';
 import './pet_view.dart';
 
 class PetsGrid extends StatefulWidget {
-  final ValueNotifier<bool> refreshNotifier;
+  final ValueNotifier<bool> addRefreshNotifier;
 
-  PetsGrid({required this.refreshNotifier});
+  PetsGrid({required this.addRefreshNotifier});
 
   @override
   State<PetsGrid> createState() => _PetsGridState();
@@ -16,6 +16,7 @@ class PetsGrid extends StatefulWidget {
 
 class _PetsGridState extends State<PetsGrid> {
   late Future<List<Pet>> _fetchPetsFuture;
+  final delEditRefreshNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -23,12 +24,13 @@ class _PetsGridState extends State<PetsGrid> {
     super.initState();
     final petsProvider = Provider.of<Pets>(context, listen: false);
     _fetchPetsFuture = petsProvider.fetchPets();
-    widget.refreshNotifier.addListener(_refresh);
+    widget.addRefreshNotifier.addListener(_refresh);
+    delEditRefreshNotifier.addListener(_refresh);
   }
 
   @override
   void dispose() {
-    widget.refreshNotifier.removeListener(_refresh);
+    widget.addRefreshNotifier.removeListener(_refresh);
     super.dispose();
   }
 
@@ -57,7 +59,15 @@ class _PetsGridState extends State<PetsGrid> {
             padding: const EdgeInsets.all(10.0),
             itemCount: pets.length,
             itemBuilder: (ctx, i) => GestureDetector(
-              onTap:()=> Navigator.push(context, MaterialPageRoute(builder: (context) => PetDetails(pet: pets[i]))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PetDetails(
+                          pet: pets[i],
+                          onPetEditDel: () {
+                            delEditRefreshNotifier.value =
+                                !delEditRefreshNotifier.value;
+                          }))),
               child: ChangeNotifierProvider<Pet>.value(
                 value: pets[i],
                 child: PetView(),

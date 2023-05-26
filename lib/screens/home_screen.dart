@@ -58,10 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
     double width = MediaQuery.of(context).size.width;
 
     final List<Widget> _pages = [
-      Center(
-        child: Text('Home')
-      ),
-      PetsGrid(refreshNotifier: refreshNotifier),
+      Center(child: Text('Home')),
+      PetsGrid(addRefreshNotifier: refreshNotifier),
       FencesGrid(),
       Center(
         child: Column(),
@@ -80,13 +78,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 padding: EdgeInsets.only(top: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white, //Color.fromRGBO(192, 192, 192, 1.0),
+                    color: Colors.white, //Color.fromRGBO(192, 192, 192, 1.0),
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
-                    )
-                ),
-                height: height*0.08,
+                    )),
+                height: height * 0.08,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

@@ -145,8 +145,10 @@ class _NewPetFormState extends State<NewPetForm> {
             backgroundColor: Colors.transparent,
             foregroundColor: Colors.black,
             title: Text('New Pet'),
-            leading: IconButton(onPressed: ()=> Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back_ios_new_rounded),),
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back_ios_new_rounded),
+            ),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -157,30 +159,30 @@ class _NewPetFormState extends State<NewPetForm> {
                   Center(
                     child: _pickedImage == null
                         ? ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Container(
-                        width: width*0.2,
-                          height: height*0.1,
-                          color: Colors.grey[200],
-                          child: IconButton(icon: Icon(Icons.camera_alt_outlined),
-                            onPressed: _takePhoto,
-                            )),
-                    ) 
+                            borderRadius: BorderRadius.circular(100),
+                            child: Container(
+                                width: width * 0.2,
+                                height: height * 0.1,
+                                color: Colors.grey[200],
+                                child: IconButton(
+                                  icon: Icon(Icons.camera_alt_outlined),
+                                  onPressed: _takePhoto,
+                                )),
+                          )
                         : Image.file(_pickedImage!),
                   ),
-                  SizedBox(height:20),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape:
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100)
-                            ),
-                          padding: EdgeInsets.symmetric(vertical: height*0.02, horizontal: width*0.04),
-                          elevation: 0
-                        ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100)),
+                            padding: EdgeInsets.symmetric(
+                                vertical: height * 0.02,
+                                horizontal: width * 0.04),
+                            elevation: 0),
                         onPressed: _selectImageFromGallery,
                         child: Text('Upload photo from gallery'),
                       ),
@@ -222,14 +224,17 @@ class _NewPetFormState extends State<NewPetForm> {
                   ),
                   SizedBox(height: 16),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width*0.25),
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.25),
                     child: ElevatedButton(
                       onPressed: _addPet,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Add Pet'),
-                          Icon(Icons.pets_rounded, size: 15,)
+                          Icon(
+                            Icons.pets_rounded,
+                            size: 15,
+                          )
                         ],
                       ),
                       style: ElevatedButton.styleFrom(
@@ -239,7 +244,8 @@ class _NewPetFormState extends State<NewPetForm> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: height*0.02, horizontal: width*0.05),
+                        padding: EdgeInsets.symmetric(
+                            vertical: height * 0.02, horizontal: width * 0.05),
                       ),
                     ),
                   ),
