@@ -26,6 +26,13 @@ class _NewFenceFormState extends State<NewFenceForm> {
   List<LatLng> _fenceCoordinates = [];
   Set<Marker> _markers = {};
   Set<Polygon> _polygons = {};
+  late Future<LatLng> _initLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _initLocation = _getCurrentLocation();
+  }
 
   bool _segmentsIntersect(
       vm.Vector2 p1, vm.Vector2 q1, vm.Vector2 p2, vm.Vector2 q2) {
@@ -259,7 +266,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
         ],
       ),
       body: FutureBuilder<LatLng>(
-        future: _getCurrentLocation(),
+        future: _initLocation,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
