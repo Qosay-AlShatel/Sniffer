@@ -18,6 +18,14 @@ class NewFenceForm extends StatefulWidget {
 }
 
 class _NewFenceFormState extends State<NewFenceForm> {
+  bool _isLoading = false;
+
+  void _setLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
+
   bool _isMapRendered = false;
 
   final Completer<void> _mapRenderedCompleter = Completer<void>();
@@ -155,6 +163,8 @@ class _NewFenceFormState extends State<NewFenceForm> {
       return;
     }
 
+    FocusScope.of(context).unfocus();
+
     _formKey.currentState!.save();
 
     // Before taking the snapshot, adjust the map view to include the entire geofence.
@@ -187,12 +197,13 @@ class _NewFenceFormState extends State<NewFenceForm> {
 
       // Update the map camera to include the bounds.
       CameraUpdate cameraUpdate =
-          CameraUpdate.newLatLngBounds(bounds, 120); // 50 pixels padding
+          CameraUpdate.newLatLngBounds(bounds, 130); // 50 pixels padding
       await _mapController!.moveCamera(cameraUpdate);
 
       // Allow some time for map to complete camera animation
       await Future.delayed(Duration(milliseconds: 500));
     }
+    _setLoading(true);
 
     // Take a snapshot of the map
     Uint8List? mapSnapshotBytes = await _mapController!.takeSnapshot();
@@ -211,7 +222,9 @@ class _NewFenceFormState extends State<NewFenceForm> {
       // Add fence using the provider
       await Provider.of<Fences>(context, listen: false).addFence(fence);
       Navigator.of(context).pop();
+      _setLoading(false);
     } else {
+      _setLoading(false);
       // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -324,6 +337,13 @@ class _NewFenceFormState extends State<NewFenceForm> {
                   ),
                 ),
               ),
+              if (_isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ],
           );
         },

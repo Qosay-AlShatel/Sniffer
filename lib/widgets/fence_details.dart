@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,6 +17,14 @@ class FenceDetails extends StatefulWidget {
 }
 
 class _FenceDetailsState extends State<FenceDetails> {
+  bool _isLoading = false;
+
+  void _setLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
+
   late final List<LatLng> _coordinates;
   Set<Polygon> _polygons = HashSet<Polygon>();
 
@@ -43,9 +50,9 @@ class _FenceDetailsState extends State<FenceDetails> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext contextt) {
     void _deleteFenceDialog() {
-      showDialog(
+      showCupertinoDialog(
           context: context,
           builder: (context) {
             return CupertinoAlertDialog(
@@ -53,15 +60,19 @@ class _FenceDetailsState extends State<FenceDetails> {
               content: Text(
                   "Are you sure you want to delete ${widget.fence.title}? This action is not reversible."),
               actions: [
-                MaterialButton(
+                CupertinoDialogAction(
                   onPressed: () async {
+                    _setLoading(true);
+                    Navigator.pop(context); // Close the dialog after deleting
+
                     await Provider.of<Fences>(context, listen: false)
                         .deleteFence(widget.fence, context);
-                    Navigator.pop(context); // Close the dialog after deleting
+                    Navigator.pop(contextt); // Close the fence details screen
+                    _setLoading(false);
                   },
                   child: Text('Delete Fence'),
                 ),
-                MaterialButton(
+                CupertinoDialogAction(
                   onPressed: () => Navigator.pop(context),
                   child: Text('No'),
                 )
@@ -70,7 +81,8 @@ class _FenceDetailsState extends State<FenceDetails> {
           });
     }
 
-    return Scaffold(
+    return Stack(children: [
+      Scaffold(
         appBar: AppBar(
             centerTitle: true,
             title: Text(
@@ -114,6 +126,15 @@ class _FenceDetailsState extends State<FenceDetails> {
               polygons: _polygons,
             ),
           ],
-        ));
+        ),
+      ),
+      if (_isLoading)
+        Container(
+          color: Colors.black.withOpacity(0.5),
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+    ]);
   }
 }
