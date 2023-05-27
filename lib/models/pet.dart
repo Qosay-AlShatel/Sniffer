@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
-class Pet with ChangeNotifier {
+class Pet {
   final String id;
   final String name;
   final int age;
   final String imageUrl;
   final String description;
   final String ownerId;
+
   Pet({
     required this.id,
     required this.name,

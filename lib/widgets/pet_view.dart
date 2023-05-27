@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/pet.dart';
+import '../providers/pets.dart';
 
 class PetView extends StatelessWidget {
-  const PetView({Key? key}) : super(key: key);
+  final int index;
+
+  PetView({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final pet = Provider.of<Pet>(context);
+    final pet = Provider.of<Pets>(context, listen: false).pets[index];
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sniffer_pettracking_app/screens/edit_pet_details.dart';
 
-import '../providers/pet.dart';
+import '../models/pet.dart';
 
 class PetDetails extends StatefulWidget {
   final Pet pet;
