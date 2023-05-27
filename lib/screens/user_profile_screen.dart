@@ -287,7 +287,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   validator: (value) {
                                     if (value!.isNotEmpty &&
                                         !RegExp(r'^[a-z A-Z]+$')
-                                            .hasMatch(value!)) {
+                                            .hasMatch(value)) {
                                       return 'Enter a correct name';
                                     } else
                                       return null;
@@ -317,7 +317,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   validator: (value) {
                                     if (value!.isNotEmpty &&
                                         !RegExp(r'^[a-z A-Z]+$')
-                                            .hasMatch(value!)) {
+                                            .hasMatch(value)) {
                                       return 'Enter a correct name';
                                     } else
                                       return null;
@@ -347,7 +347,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   validator: (value) {
                                     if (value!.isNotEmpty &&
                                         !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-                                            .hasMatch(value!)) {
+                                            .hasMatch(value)) {
                                       return 'Enter a valid email address';
                                     } else
                                       return null;

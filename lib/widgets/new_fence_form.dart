@@ -129,8 +129,6 @@ class _NewFenceFormState extends State<NewFenceForm> {
   ui.Image? mapSnapshot;
 
   Future<void> _onSubmit() async {
-    final user = FirebaseAuth.instance.currentUser;
-
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -204,12 +202,14 @@ class _NewFenceFormState extends State<NewFenceForm> {
       String imageUrl = await _uploadFenceImage(mapSnapshotBytes);
 
       final fence = Fence(
+        id: DateTime.now().toIso8601String(),
         title: _fenceTitle,
         imageUrl: imageUrl,
-        creatorId: user!.uid,
+        creatorId: FirebaseAuth.instance.currentUser!.uid,
         coordinates: _fenceCoordinates,
       );
-      Provider.of<Fences>(context, listen: false).addFence(fence);
+      // Add fence using the provider
+      await Provider.of<Fences>(context, listen: false).addFence(fence);
       Navigator.of(context).pop();
     } else {
       // Show an error message
