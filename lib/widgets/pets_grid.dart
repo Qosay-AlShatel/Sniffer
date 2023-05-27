@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sniffer_pettracking_app/widgets/pet_details.dart';
-import '../providers/pet.dart';
+import '../models/pet.dart';
+import './pet_details.dart';
 import '../providers/pets.dart';
 import './pet_view.dart';
 
@@ -20,7 +20,6 @@ class _PetsGridState extends State<PetsGrid> {
 
   @override
   void initState() {
-    super.initState();
     super.initState();
     final petsProvider = Provider.of<Pets>(context, listen: false);
     _fetchPetsFuture = petsProvider.fetchPets();
@@ -68,10 +67,7 @@ class _PetsGridState extends State<PetsGrid> {
                             delEditRefreshNotifier.value =
                                 !delEditRefreshNotifier.value;
                           }))),
-              child: ChangeNotifierProvider<Pet>.value(
-                value: pets[i],
-                child: PetView(),
-              ),
+              child: PetView(index: i),
             ),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
