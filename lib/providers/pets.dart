@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/pet.dart';
@@ -19,8 +22,12 @@ class Pets with ChangeNotifier {
     return [..._pets];
   }
 
-  Pet findById(String id) {
-    return _pets.firstWhere((pet) => pet.id == id);
+  Pet? findById(String id) {
+    try {
+      return _pets.firstWhere((pet) => pet.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<List<Pet>> fetchPets() async {
@@ -58,10 +65,11 @@ class Pets with ChangeNotifier {
     }
   }
 
-  void addPet(Pet pet) async {
+  Future<Pet> addPet(Pet pet) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return;
+      print("Error: No user logged in.");
+      throw Exception('No user logged in');
     }
 
     final newPet = Pet(
@@ -73,22 +81,41 @@ class Pets with ChangeNotifier {
       ownerId: user.uid,
     );
 
-    final petsRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('pets');
-    await petsRef.doc(newPet.id).set({
-      'name': newPet.name,
-      'age': newPet.age,
-      'imageUrl': newPet.imageUrl,
-      'description': newPet.description,
-      'ownerId': user.uid,
-    });
+    DocumentReference docRef;
+    try {
+      docRef = await _firestore.collection('pets').add({
+        'name': newPet.name,
+        'age': newPet.age,
+        'imageUrl': newPet.imageUrl,
+        'description': newPet.description,
+        'ownerId': user.uid,
+      });
+    } catch (error) {
+      print('Error adding pet to Firestore: $error');
+      throw error;
+    }
 
-    _pets.add(newPet);
+    final createdPet = Pet(
+      id: docRef.id,
+      name: newPet.name,
+      age: newPet.age,
+      imageUrl: newPet.imageUrl,
+      description: newPet.description,
+      ownerId: user.uid,
+    );
+
+    _pets.add(createdPet);
     notifyListeners();
 
-    await fetchPets();
+    try {
+      await fetchPets();
+    } catch (error) {
+      print('Error fetching pets after add: $error');
+      throw error;
+    }
+
+    print('Pet added successfully: ${createdPet.id}');
+    return createdPet;
   }
 
   void updatePet(String id, Pet newPet) {
@@ -109,5 +136,17 @@ class Pets with ChangeNotifier {
   void clearPets() {
     _pets = [];
     notifyListeners();
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    String fileName = 'pets/${DateTime.now().toIso8601String()}.jpg';
+    final storageRef = FirebaseStorage.instance.ref().child(fileName);
+
+    final UploadTask uploadTask = storageRef.putFile(imageFile);
+
+    await uploadTask.whenComplete(() {});
+    final String downloadUrl = await storageRef.getDownloadURL();
+
+    return downloadUrl;
   }
 }

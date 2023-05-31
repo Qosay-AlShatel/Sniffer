@@ -9,7 +9,13 @@ class PetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pet = Provider.of<Pets>(context, listen: false).pets[index];
+    final petsList = Provider.of<Pets>(context, listen: false).pets;
+
+    if (petsList.isEmpty || index >= petsList.length) {
+      return Container();
+    }
+
+    final pet = petsList[index];
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),

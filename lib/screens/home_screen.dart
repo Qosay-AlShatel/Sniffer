@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+import '../widgets/trackers_list.dart';
 import '../widgets/new_pet_form.dart';
+import '../widgets/new_tracker_form.dart';
 import '../screens/user_profile_screen.dart';
 import '../widgets/pets_grid.dart';
 import '../widgets/fences_grid.dart';
 import '../widgets/new_fence_form.dart';
+import '../widgets/map_page.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/homeScreen';
@@ -24,14 +27,26 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   FloatingActionButton? _getFloatingActionButton() {
-    if (_selectedIndex == 1) {
+    if (_selectedIndex == 0) {
+      return FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => NewTrackerForm()),
+          );
+        },
+        child: Icon(Icons.add),
+      );
+    } else if (_selectedIndex == 1) {
       return FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-                builder: (context) => NewPetForm(onPetAdded: () {
-                      refreshNotifier.value = !refreshNotifier.value;
-                    })),
+              builder: (context) => NewPetForm(
+                onPetAdded: () {
+                  refreshNotifier.value = !refreshNotifier.value;
+                },
+              ),
+            ),
           );
         },
         child: Icon(Icons.add),
@@ -58,12 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
     double width = MediaQuery.of(context).size.width;
 
     final List<Widget> _pages = [
-      Center(child: Text('Home')),
+      TrackersList(),
       PetsGrid(addRefreshNotifier: refreshNotifier),
       FencesGrid(),
-      Center(
-        child: Column(),
-      ),
+      MapPage(),
     ];
 
     return Scaffold(
@@ -111,8 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Expanded(
-                child: Container(
-                    color: Colors.white, child: _pages[_selectedIndex])),
+              child:
+                  Container(color: Colors.white, child: _pages[_selectedIndex]),
+            ),
           ],
         ),
       ),
@@ -128,13 +142,15 @@ class _HomeScreenState extends State<HomeScreen> {
             tabBackgroundColor: Colors
                 .deepPurple, //TODO: Change background color individually based on page UI
             onTabChange: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
+              setState(
+                () {
+                  _selectedIndex = index;
+                },
+              );
             },
             padding: const EdgeInsets.all(16),
             tabs: const [
-              GButton(icon: Icons.home, text: 'Home'),
+              GButton(icon: Icons.gps_fixed, text: 'Trackers'),
               GButton(icon: Icons.pets, text: 'Pets'),
               GButton(icon: Icons.place, text: 'Fences'),
               GButton(icon: Icons.map, text: 'Maps'),

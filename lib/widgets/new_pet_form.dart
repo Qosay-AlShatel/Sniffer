@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../providers/pets.dart';
+import '../models/pet.dart';
 
 class NewPetForm extends StatefulWidget {
   final VoidCallback onPetAdded;
@@ -46,18 +47,6 @@ class _NewPetFormState extends State<NewPetForm> {
     });
   }
 
-  Future<String> _uploadImage(File imageFile) async {
-    String fileName = 'pets/${DateTime.now().toIso8601String()}.jpg';
-    final storageRef = FirebaseStorage.instance.ref().child(fileName);
-
-    final UploadTask uploadTask = storageRef.putFile(imageFile);
-
-    await uploadTask.whenComplete(() {});
-    final String downloadUrl = await storageRef.getDownloadURL();
-
-    return downloadUrl;
-  }
-
   Future<void> _addPet() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -74,7 +63,9 @@ class _NewPetFormState extends State<NewPetForm> {
 
       String imageUrl;
       try {
-        imageUrl = await _uploadImage(_pickedImage!);
+        // Use the provider to upload the image
+        imageUrl = await Provider.of<Pets>(context, listen: false)
+            .uploadImage(_pickedImage!);
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error uploading image: $error')),
@@ -84,13 +75,18 @@ class _NewPetFormState extends State<NewPetForm> {
       }
 
       try {
-        await FirebaseFirestore.instance.collection('pets').add({
-          'name': _name,
-          'age': _age,
-          'description': _description,
-          'imageUrl': imageUrl,
-          'ownerId': user.uid,
-        });
+        // Create a new Pet object
+        Pet newPet = Pet(
+          id: '',
+          name: _name!,
+          age: _age!,
+          description: _description!,
+          imageUrl: imageUrl,
+          ownerId: user.uid,
+        );
+
+        // Use the provider to add the pet
+        await Provider.of<Pets>(context, listen: false).addPet(newPet);
 
         _setLoading(false);
         Navigator.of(context).pop();

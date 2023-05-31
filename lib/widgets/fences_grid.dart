@@ -39,12 +39,18 @@ class _FencesGridState extends State<FencesGrid> {
     }
 
     return _isLoading
-        ? Center(child: CircularProgressIndicator(color: Colors.deepPurple[300],))
+        ? Center(
+            child: CircularProgressIndicator(
+            color: Colors.deepPurple[300],
+          ))
         : GridView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: fences.length,
             itemBuilder: (ctx, i) => GestureDetector(
-              onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => FenceDetails(fence: fences[i]))),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FenceDetails(fence: fences[i]))),
                 child: FenceView(fence: fences[i])),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,

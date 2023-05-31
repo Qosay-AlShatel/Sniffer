@@ -9,6 +9,7 @@ import './screens/home_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/onBoarding_screens/onBoarding_screens.dart';
 import 'providers/fences.dart';
+import 'providers/trackers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (ctx) => Trackers()),
         ChangeNotifierProvider(create: (ctx) => Fences()),
         Provider<FirebaseAuth>.value(value: FirebaseAuth.instance),
         ChangeNotifierProxyProvider<FirebaseAuth, Pets>(
