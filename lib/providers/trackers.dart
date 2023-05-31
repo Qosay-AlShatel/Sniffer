@@ -35,7 +35,8 @@ class Trackers with ChangeNotifier {
     }
   }
 
-  Future<void> updateTrackerDetails(Tracker tracker) async {
+  Future<void> updateTrackerDetails(
+      Tracker tracker, BuildContext context) async {
     final trackerRef = _firestore.collection('trackers').doc(tracker.id);
 
     try {
@@ -59,10 +60,26 @@ class Trackers with ChangeNotifier {
       }
 
       notifyListeners();
+      Navigator.of(context).pop();
     } catch (error) {
       print('Error updating tracker details: $error');
       throw error;
     }
+  }
+
+  void updateLocalTracker(Tracker updatedTracker) {
+    final trackerIndex =
+        _trackers.indexWhere((track) => track.id == updatedTracker.id);
+
+    if (trackerIndex >= 0) {
+      // The tracker already exists in the list, so update it
+      _trackers[trackerIndex] = updatedTracker;
+    } else {
+      // The tracker doesn't exist in the list, so add it
+      _trackers.add(updatedTracker);
+    }
+
+    notifyListeners();
   }
 
   Future<void> removeTracker(String trackerId) async {
