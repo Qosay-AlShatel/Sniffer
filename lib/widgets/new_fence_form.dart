@@ -74,9 +74,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
     }
   }
 
+  //@TODO add something to let user know they've reached maximum taps/less than minimum taps
   void _onMapTapped(LatLng latLng) {
     if (_fenceCoordinates.length >= 8) {
-      // Only allow six points maximum
+      // Only allow eight points maximum
       return;
     }
 
@@ -96,8 +97,8 @@ class _NewFenceFormState extends State<NewFenceForm> {
           polygonId: PolygonId('geofence'),
           points: _fenceCoordinates,
           strokeWidth: 2,
-          strokeColor: Colors.red,
-          fillColor: Colors.red.withOpacity(0.2),
+          strokeColor: Colors.deepPurple,
+          fillColor: Colors.deepPurple.withOpacity(0.2),
         ));
       }
     });

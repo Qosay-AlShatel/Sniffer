@@ -110,6 +110,7 @@ class _PetDetailsState extends State<PetDetails> {
                 left: 10,
                 child: SizedBox(
                     height: height * 0.50,
+                    width: width*0.65,
                     child: Image.network(
                       widget.pet.imageUrl,
                       fit: BoxFit.cover,
@@ -234,7 +235,7 @@ class _PetDetailsState extends State<PetDetails> {
                   width: 50,
                   child: IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.maps_home_work_sharp),
+                    icon: Icon(Icons.delete_forever_outlined),
                   ),
                   decoration: BoxDecoration(
                       color: Colors.deepPurple.withOpacity(0.5),
@@ -251,26 +252,29 @@ class _PetDetailsState extends State<PetDetails> {
                 Expanded(
                     child: Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0, 1),
-                            blurRadius: 5,
-                            color: Colors.deepPurple.withOpacity(0.3),
-                          )
-                        ]),
-                    child: Center(
-                      child: Text(
-                        widget.pet.name.toUpperCase() + '\'S FENCE',
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.90),
-                            fontSize: 20.0),
+                      child: ElevatedButton(
+                        onPressed: (){},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Change Fence'),
+                            Icon(
+                              Icons.maps_home_work_sharp,
+                              size: 20,
+                            )
+                          ],
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: Colors.deepPurple.withOpacity(0.5),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              vertical: height * 0.02, horizontal: width * 0.05),
+                        ),
                       ),
-                    ),
-                  ),
                 ))
               ],
             )),

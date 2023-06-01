@@ -93,70 +93,131 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     Provider.of<Pets>(context).fetchPets();
     final userPets = Provider.of<Pets>(context).pets;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
         title: Text('Add Tracker'),
+    leading: IconButton(
+    onPressed: () => Navigator.of(context).pop(),
+    icon: Icon(Icons.arrow_back_ios_new_rounded),
+    ),
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
+      body: ListView(
           children: [
-            TextFormField(
-              controller: _trackerIdController,
-              decoration: InputDecoration(labelText: 'Tracker Id'),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _trackerIdController,
+                decoration: InputDecoration(labelText: 'Tracker ID'),
+              ),
+             SizedBox(height: 15),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.24),
+                child: ElevatedButton(
+                onPressed: _checkTrackerId,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Check Tracker ID'),
+                    Icon(
+                      Icons.check_circle_outline_rounded,
+                      size: 20,
+                    )
+                  ],
+                ),
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.deepPurple[100],
+                  foregroundColor: Colors.deepPurple[500],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      vertical: height * 0.02, horizontal: width * 0.05),
+                ),
             ),
-            ElevatedButton(
-              child: Text('Check Id'),
-              onPressed: _checkTrackerId,
-            ),
-            if (_isValidTrackerId) ...[
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
-              ),
-              DropdownButtonFormField(
-                value: userPets.isNotEmpty ? userPets.first.id : null,
-                items: userPets
-                    .map((pet) => DropdownMenuItem(
-                          child: Text(pet.name),
-                          value: pet.id,
-                        ))
-                    .toList(),
-                onChanged: (String? petId) {
-                  _selectedPet = petId!;
-                  print('Selected pet id: $_selectedPet');
-                },
-                decoration: InputDecoration(labelText: 'Tracked Pet'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please choose a pet';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Longitude'),
-                initialValue: _newTracker.longitude.toString(),
-                enabled: false,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Latitude'),
-                initialValue: _newTracker.latitude.toString(),
-                enabled: false,
-              ),
-              ElevatedButton(
-                child: Text('Submit'),
-                onPressed: () {
-                  _submitForm();
-                  Navigator.of(context).pop();
-                },
-              ),
+             ),
+              if (_isValidTrackerId) ...[
+                TextFormField(
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: 'Title'),
+                ),
+                DropdownButtonFormField(
+                  value: userPets.isNotEmpty ? userPets.first.id : null,
+                  items: userPets
+                      .map((pet) => DropdownMenuItem(
+                            child: Text(pet.name),
+                            value: pet.id,
+                          ))
+                      .toList(),
+                  onChanged: (String? petId) {
+                    _selectedPet = petId!;
+                    print('Selected pet id: $_selectedPet');
+                  },
+                  decoration: InputDecoration(labelText: 'Tracked Pet'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please choose a pet';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Longitude'),
+                  initialValue: _newTracker.longitude.toString(),
+                  enabled: false,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Latitude'),
+                  initialValue: _newTracker.latitude.toString(),
+                  enabled: false,
+                ),
+                SizedBox(height: 15),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.24),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _submitForm();
+                      Navigator.of(context).pop();
+                      },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Add Tracker'),
+                        Icon(
+                          Icons.pets_rounded,
+                          size: 20,
+                        )
+                      ],
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: Colors.deepPurple[100],
+                      foregroundColor: Colors.deepPurple[500],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: height * 0.02, horizontal: width * 0.05),
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
-    );
+    ]));
   }
 }
