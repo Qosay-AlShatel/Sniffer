@@ -51,6 +51,8 @@ class Pets with ChangeNotifier {
           description: doc['description'],
           imageUrl: doc['imageUrl'],
           ownerId: user.uid,
+          fenceId: doc['fenceId'] ??
+              '', // fetch fenceId from the doc, defaults to an empty string if not provided
         );
       }).toList();
       _pets = pets;
@@ -79,6 +81,7 @@ class Pets with ChangeNotifier {
       imageUrl: pet.imageUrl,
       description: pet.description,
       ownerId: user.uid,
+      fenceId: pet.fenceId, // assign fenceId to the new pet
     );
 
     DocumentReference docRef;
@@ -89,6 +92,7 @@ class Pets with ChangeNotifier {
         'imageUrl': newPet.imageUrl,
         'description': newPet.description,
         'ownerId': user.uid,
+        'fenceId': newPet.fenceId, // store fenceId in Firestore
       });
     } catch (error) {
       print('Error adding pet to Firestore: $error');
@@ -102,6 +106,7 @@ class Pets with ChangeNotifier {
       imageUrl: newPet.imageUrl,
       description: newPet.description,
       ownerId: user.uid,
+      fenceId: newPet.fenceId,
     );
 
     _pets.add(createdPet);
@@ -118,10 +123,12 @@ class Pets with ChangeNotifier {
     return createdPet;
   }
 
-  void updatePet(String id, Pet newPet) {
+  void updatePet(String id, Pet newPet, String fenceId) {
+    // add fenceId as a parameter to updatePet method
     final petIndex = _pets.indexWhere((pet) => pet.id == id);
     if (petIndex >= 0) {
-      _pets[petIndex] = newPet;
+      _pets[petIndex] =
+          newPet.copyWith(fenceId: fenceId); // assign new fenceId to the pet
       notifyListeners();
     } else {
       print('...');

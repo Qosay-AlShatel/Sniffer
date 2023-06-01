@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../providers/pets.dart';
 import '../models/pet.dart';
+import '../providers/fences.dart';
+import '../models/fence.dart';
 
 class NewPetForm extends StatefulWidget {
   final VoidCallback onPetAdded;
@@ -19,6 +21,22 @@ class NewPetForm extends StatefulWidget {
 
 class _NewPetFormState extends State<NewPetForm> {
   bool _isLoading = false;
+
+  String? _fenceId;
+  List<Fence>? _fences;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFences();
+  }
+
+  Future<void> _loadFences() async {
+    await Provider.of<Fences>(context, listen: false).fetchAndSetFences();
+    setState(() {
+      _fences = Provider.of<Fences>(context, listen: false).fences;
+    });
+  }
 
   void _setLoading(bool value) {
     setState(() {
@@ -83,6 +101,7 @@ class _NewPetFormState extends State<NewPetForm> {
           description: _description!,
           imageUrl: imageUrl,
           ownerId: user.uid,
+          fenceId: _fenceId ?? '',
         );
 
         // Use the provider to add the pet
@@ -244,6 +263,24 @@ class _NewPetFormState extends State<NewPetForm> {
                             vertical: height * 0.02, horizontal: width * 0.05),
                       ),
                     ),
+                  ),
+                  SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(labelText: 'Fence'),
+                    value: _fenceId,
+                    items: _fences?.map((Fence fence) {
+                      return DropdownMenuItem<String>(
+                        value: fence.id,
+                        child: Text(fence.title),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _fenceId = newValue;
+                      });
+                    },
+                    // Allowing for the value to be null
+                    validator: (value) => null,
                   ),
                 ],
               ),
