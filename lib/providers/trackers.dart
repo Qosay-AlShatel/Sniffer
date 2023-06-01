@@ -35,51 +35,40 @@ class Trackers with ChangeNotifier {
     }
   }
 
-  Future<void> updateTrackerDetails(
-      Tracker tracker, BuildContext context) async {
-    final trackerRef = _firestore.collection('trackers').doc(tracker.id);
-
-    try {
-      await trackerRef.update(tracker.toMap());
-
-      final docSnapshot = await trackerRef.get();
-      final data = docSnapshot.data() as Map<String, dynamic>;
-
-      // Here we handle potential null values in the data map
-      final updatedTracker = Tracker.fromMap(data, tracker.id);
-
-      final trackerIndex =
-          _trackers.indexWhere((track) => track.id == updatedTracker.id);
-
-      if (trackerIndex >= 0) {
-        // The tracker already exists in the list, so update it
-        _trackers[trackerIndex] = updatedTracker;
-      } else {
-        // The tracker doesn't exist in the list, so add it
-        _trackers.add(updatedTracker);
-      }
-
+// This method updates the tracker locally
+  void updateLocalTracker(Tracker updatedTracker) {
+    int index =
+        _trackers.indexWhere((tracker) => tracker.id == updatedTracker.id);
+    if (index != -1) {
+      _trackers[index] = updatedTracker;
       notifyListeners();
-      Navigator.of(context).pop();
-    } catch (error) {
-      print('Error updating tracker details: $error');
-      throw error;
+    } else {
+      throw Exception('Tracker not found');
     }
   }
 
-  void updateLocalTracker(Tracker updatedTracker) {
-    final trackerIndex =
-        _trackers.indexWhere((track) => track.id == updatedTracker.id);
+// This method updates the tracker in Firestore and locally
+  Future<void> updateTrackerDetails(
+      Tracker tracker, BuildContext context) async {
+    try {
+      await _firestore
+          .collection('trackers')
+          .doc(tracker.id)
+          .set(tracker.toMap());
 
-    if (trackerIndex >= 0) {
-      // The tracker already exists in the list, so update it
-      _trackers[trackerIndex] = updatedTracker;
-    } else {
-      // The tracker doesn't exist in the list, so add it
-      _trackers.add(updatedTracker);
+      int index = _trackers
+          .indexWhere((existingTracker) => existingTracker.id == tracker.id);
+      if (index != -1) {
+        // Update the tracker locally as well
+        _trackers[index] = tracker;
+      } else {
+        // Tracker not found locally, add it to the list
+        _trackers.add(tracker);
+      }
+      notifyListeners();
+    } catch (error) {
+      print('Error updating tracker: $error');
     }
-
-    notifyListeners();
   }
 
   Future<void> removeTracker(String trackerId) async {

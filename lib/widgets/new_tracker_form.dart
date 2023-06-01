@@ -88,9 +88,7 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
     _newTracker.ownerId = user.uid;
 
     Provider.of<Trackers>(context, listen: false)
-        .updateTrackerDetails(_newTracker);
-    Provider.of<Pets>(context, listen: false).fetchPets();
-    Navigator.of(context).pop();
+        .updateTrackerDetails(_newTracker, context);
   }
 
   @override
@@ -150,7 +148,10 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
               ),
               ElevatedButton(
                 child: Text('Submit'),
-                onPressed: _submitForm,
+                onPressed: () {
+                  _submitForm();
+                  Navigator.of(context).pop();
+                },
               ),
             ],
           ],

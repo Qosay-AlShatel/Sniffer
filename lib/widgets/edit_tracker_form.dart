@@ -46,6 +46,8 @@ class _EditTrackerFormState extends State<EditTrackerForm> {
     );
 
     trackersProvider.updateTrackerDetails(updatedTracker, context);
+
+    Navigator.of(context).pop();
   }
 
   @override
