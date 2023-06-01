@@ -13,6 +13,10 @@ class Trackers with ChangeNotifier {
     return [..._trackers];
   }
 
+  Tracker findById(String id) {
+    return _trackers.firstWhere((tracker) => tracker.id == id);
+  }
+
   Future<void> fetchAndSetTrackers() async {
     try {
       final user = _auth.currentUser;
@@ -26,8 +30,26 @@ class Trackers with ChangeNotifier {
           .get();
 
       _trackers = response.docs.map((doc) {
-        final data = doc.data();
-        return Tracker.fromMap(data, doc.id);
+        // Listen to the document for real-time updates
+        _firestore
+            .collection('trackers')
+            .doc(doc.id)
+            .snapshots()
+            .listen((snapshot) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          final updatedTracker = Tracker.fromMap(data, snapshot.id);
+          // Update the tracker in the list
+          int index = _trackers
+              .indexWhere((tracker) => tracker.id == updatedTracker.id);
+          if (index != -1) {
+            _trackers[index] = updatedTracker;
+            notifyListeners();
+          } else {
+            throw Exception('Tracker not found');
+          }
+        });
+        final initialData = doc.data();
+        return Tracker.fromMap(initialData, doc.id);
       }).toList();
       notifyListeners();
     } catch (error) {

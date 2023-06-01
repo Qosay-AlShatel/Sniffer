@@ -41,18 +41,15 @@ class _MapPageState extends State<MapPage> {
   }
 
   void _updateMarkersAndPolygons() {
-    var trackersProvider = Provider.of<Trackers>(context, listen: false);
-    var petsProvider = Provider.of<Pets>(context, listen: false);
-    var fencesProvider = Provider.of<Fences>(context, listen: false);
-
     // Clear the existing markers and polygons first
     markers.clear();
     polygons.clear();
 
-    // Create a marker and polygon for the selected tracker, if any
+    // Check if a tracker is selected
     if (_selectedTracker != null) {
-      var tracker = trackersProvider.trackers
-          .firstWhere((tracker) => tracker.id == _selectedTracker);
+      // Get the selected tracker
+      var tracker = Provider.of<Trackers>(context, listen: false)
+          .findById(_selectedTracker!);
 
       markers.add(Marker(
         markerId: MarkerId(tracker.id),
@@ -60,10 +57,15 @@ class _MapPageState extends State<MapPage> {
         infoWindow: InfoWindow(title: tracker.title),
       ));
 
-      var pet = petsProvider.findById(tracker.petId);
+      // Get the pet associated with the tracker
+      var pet =
+          Provider.of<Pets>(context, listen: false).findById(tracker.petId);
       if (pet != null) {
-        var fence = fencesProvider.findById(pet.fenceId);
+        // Get the fence associated with the pet
+        var fence =
+            Provider.of<Fences>(context, listen: false).findById(pet.fenceId);
         if (fence != null) {
+          // Add polygon for the selected fence
           polygons.add(Polygon(
             polygonId: PolygonId(fence.id),
             points: fence.coordinates
@@ -119,7 +121,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     var trackers = Provider.of<Trackers>(context).trackers;
-
+    _updateMarkersAndPolygons();
     List<DropdownMenuItem<String>> dropdownItems = trackers.map((tracker) {
       return DropdownMenuItem(
         child: Text(tracker.title),
