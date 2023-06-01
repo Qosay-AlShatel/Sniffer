@@ -15,6 +15,14 @@ class Fences with ChangeNotifier {
     return [..._fences];
   }
 
+  Fence? findById(String id) {
+    try {
+      return _fences.firstWhere((fence) => fence.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> fetchAndSetFences() async {
     try {
       final user = _auth.currentUser;
