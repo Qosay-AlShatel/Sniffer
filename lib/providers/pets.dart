@@ -123,16 +123,41 @@ class Pets with ChangeNotifier {
     return createdPet;
   }
 
-  void updatePet(String id, Pet newPet, String fenceId) {
-    // add fenceId as a parameter to updatePet method
-    final petIndex = _pets.indexWhere((pet) => pet.id == id);
-    if (petIndex >= 0) {
-      _pets[petIndex] =
-          newPet.copyWith(fenceId: fenceId); // assign new fenceId to the pet
-      notifyListeners();
-    } else {
-      print('...');
-    }
+// in pets.dart
+
+  Future<void> updatePet(String id, String name, int age, String description,
+      String imageUrl, String ownerId, String fenceId) async {
+    await FirebaseFirestore.instance.collection('pets').doc(id).update({
+      'name': name,
+      'age': age,
+      'description': description,
+      'imageUrl': imageUrl,
+      'ownerId': ownerId,
+      'fenceId': fenceId,
+    });
+
+    final index = _pets.indexWhere((pet) => pet.id == id);
+    _pets[index] = Pet(
+      id: id,
+      name: name,
+      age: age,
+      description: description,
+      imageUrl: imageUrl,
+      ownerId: ownerId,
+      fenceId: fenceId,
+    );
+    notifyListeners();
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    String fileName = 'users/${DateTime.now().toIso8601String()}.jpg';
+    final storageRef = FirebaseStorage.instance.ref().child(fileName);
+
+    final UploadTask uploadTask = storageRef.putFile(imageFile);
+    await uploadTask.whenComplete(() {});
+    final String downloadUrl = await storageRef.getDownloadURL();
+
+    return downloadUrl;
   }
 
   Future<void> deletePet(String id, BuildContext context) async {
@@ -161,17 +186,5 @@ class Pets with ChangeNotifier {
     } catch (e) {
       print('Error deleting pet: $e');
     }
-  }
-
-  Future<String> uploadImage(File imageFile) async {
-    String fileName = 'pets/${DateTime.now().toIso8601String()}.jpg';
-    final storageRef = FirebaseStorage.instance.ref().child(fileName);
-
-    final UploadTask uploadTask = storageRef.putFile(imageFile);
-
-    await uploadTask.whenComplete(() {});
-    final String downloadUrl = await storageRef.getDownloadURL();
-
-    return downloadUrl;
   }
 }
