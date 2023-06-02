@@ -1,14 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sniffer_pettracking_app/screens/edit_pet_details.dart';
-
+import '../screens/edit_pet_details.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
 import '../models/pet.dart';
+import '../providers/pets.dart';
 
 class PetDetails extends StatefulWidget {
   final Pet pet;
-  final VoidCallback onPetEditDel;
-  const PetDetails({Key? key, required this.pet, required this.onPetEditDel})
-      : super(key: key);
+  const PetDetails({Key? key, required this.pet}) : super(key: key);
 
   @override
   State<PetDetails> createState() => _PetDetailsState();
@@ -23,60 +22,40 @@ class _PetDetailsState extends State<PetDetails> {
     });
   }
 
-  Future<void> _deletePet() async {
-    _setLoading(true);
-    try {
-      await FirebaseFirestore.instance
-          .collection('pets')
-          .doc(widget.pet.id)
-          .delete();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Pet profile deleted successfully!'),
-        ),
-      );
-      _setLoading(false);
-      Navigator.of(context).pop();
-      widget.onPetEditDel();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting pet profile: $e'),
-        ),
-      );
-      _setLoading(false);
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext contextt) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
     void _deleteDialog() {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text("Delete ${widget.pet.name}"),
-              content: Text(
-                  "Are you sure you want to delete ${widget.pet.name}? This action is not reversible."),
-              actions: [
-                MaterialButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _deletePet();
-                  },
-                  child: Text('Delete pet'),
-                ),
-                MaterialButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('No'),
-                )
-              ],
-            );
-          });
-      setState(() {});
+      showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text("Delete ${widget.pet.name}"),
+            content: Text(
+                "Are you sure you want to delete ${widget.pet.name}? This action is not reversible."),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () async {
+                  _setLoading(true);
+                  Navigator.pop(context);
+
+                  await Provider.of<Pets>(context, listen: false)
+                      .deletePet(widget.pet.id, context);
+                  Navigator.pop(contextt);
+                  _setLoading(false);
+                },
+                child: Text('Delete Pet'),
+              ),
+              CupertinoDialogAction(
+                onPressed: () => Navigator.pop(context),
+                child: Text('No'),
+              )
+            ],
+          );
+        },
+      );
     }
 
     return Stack(children: [
@@ -110,7 +89,7 @@ class _PetDetailsState extends State<PetDetails> {
                 left: 10,
                 child: SizedBox(
                     height: height * 0.50,
-                    width: width*0.65,
+                    width: width * 0.65,
                     child: Image.network(
                       widget.pet.imageUrl,
                       fit: BoxFit.cover,
@@ -187,28 +166,6 @@ class _PetDetailsState extends State<PetDetails> {
                                       fontWeight: FontWeight.bold))
                             ],
                           ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              child: IconButton(
-                                onPressed: _deleteDialog,
-                                icon: Icon(Icons.delete_outline_rounded),
-                              ),
-                              decoration: BoxDecoration(
-                                  color: Colors.deepPurple.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(50),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 1),
-                                      blurRadius: 5,
-                                      color: Colors.deepPurple.withOpacity(0.3),
-                                    )
-                                  ]),
-                            ),
-                          )
                         ],
                       ),
                       SizedBox(height: 15),
@@ -234,7 +191,7 @@ class _PetDetailsState extends State<PetDetails> {
                   height: 50,
                   width: 50,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: _deleteDialog,
                     icon: Icon(Icons.delete_forever_outlined),
                   ),
                   decoration: BoxDecoration(
@@ -252,29 +209,29 @@ class _PetDetailsState extends State<PetDetails> {
                 Expanded(
                     child: Padding(
                   padding: const EdgeInsets.only(left: 8),
-                      child: ElevatedButton(
-                        onPressed: (){},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Change Fence'),
-                            Icon(
-                              Icons.maps_home_work_sharp,
-                              size: 20,
-                            )
-                          ],
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: Colors.deepPurple.withOpacity(0.5),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                              vertical: height * 0.02, horizontal: width * 0.05),
-                        ),
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Change Fence'),
+                        Icon(
+                          Icons.maps_home_work_sharp,
+                          size: 20,
+                        )
+                      ],
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: Colors.deepPurple.withOpacity(0.5),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: height * 0.02, horizontal: width * 0.05),
+                    ),
+                  ),
                 ))
               ],
             )),

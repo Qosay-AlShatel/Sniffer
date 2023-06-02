@@ -1,85 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/pet.dart';
 import './pet_details.dart';
 import '../providers/pets.dart';
 import './pet_view.dart';
 
 class PetsGrid extends StatefulWidget {
-  final ValueNotifier<bool> addRefreshNotifier;
-
-  PetsGrid({required this.addRefreshNotifier});
+  const PetsGrid({Key? key}) : super(key: key);
 
   @override
-  State<PetsGrid> createState() => _PetsGridState();
+  _PetsGridState createState() => _PetsGridState();
 }
 
 class _PetsGridState extends State<PetsGrid> {
-  late Future<List<Pet>> _fetchPetsFuture;
-  final delEditRefreshNotifier = ValueNotifier<bool>(false);
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    final petsProvider = Provider.of<Pets>(context, listen: false);
-    _fetchPetsFuture = petsProvider.fetchPets();
-    widget.addRefreshNotifier.addListener(_refresh);
-    delEditRefreshNotifier.addListener(_refresh);
-  }
-
-  @override
-  void dispose() {
-    widget.addRefreshNotifier.removeListener(_refresh);
-    super.dispose();
-  }
-
-  void _refresh() {
-    final petsProvider = Provider.of<Pets>(context, listen: false);
     setState(() {
-      _fetchPetsFuture = petsProvider.fetchPets();
+      _isLoading = true;
+    });
+    Provider.of<Pets>(context, listen: false).fetchPets().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Pet>>(
-      future: _fetchPetsFuture,
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('An error occurred!'));
-        } else if (snapshot.hasData) {
-          final pets = snapshot.data!;
-          if (pets.isEmpty) {
-            return Center(child: Text('No pets found.'));
-          }
-          return GridView.builder(
-            padding: const EdgeInsets.all(10.0),
+    final petsData = Provider.of<Pets>(context);
+    final pets = petsData.pets;
+
+    if (pets.isEmpty) {
+      return Center(
+        child: Text('No pets added yet.'),
+      );
+    }
+
+    return _isLoading
+        ? Center(
+            child: CircularProgressIndicator(
+            color: Colors.deepPurple[300],
+          ))
+        : GridView.builder(
+            padding: const EdgeInsets.all(10),
             itemCount: pets.length,
             itemBuilder: (ctx, i) => GestureDetector(
               onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PetDetails(
-                          pet: pets[i],
-                          onPetEditDel: () {
-                            delEditRefreshNotifier.value =
-                                !delEditRefreshNotifier.value;
-                          }))),
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PetDetails(pet: pets[i]),
+                ),
+              ),
               child: PetView(index: i),
             ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
               childAspectRatio: 3 / 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
           );
-        } else {
-          return Center(child: Text('No pets found.'));
-        }
-      },
-    );
   }
 }

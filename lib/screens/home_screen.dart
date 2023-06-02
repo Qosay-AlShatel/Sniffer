@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final List<Widget> _pages = [
       TrackersList(),
-      PetsGrid(addRefreshNotifier: refreshNotifier),
+      PetsGrid(),
       FencesGrid(),
       MapPage(),
     ];

@@ -135,14 +135,32 @@ class Pets with ChangeNotifier {
     }
   }
 
-  void deletePet(String id) {
-    _pets.removeWhere((pet) => pet.id == id);
-    notifyListeners();
-  }
+  Future<void> deletePet(String id, BuildContext context) async {
+    try {
+      DocumentSnapshot docSnap =
+          await FirebaseFirestore.instance.collection('pets').doc(id).get();
 
-  void clearPets() {
-    _pets = [];
-    notifyListeners();
+      if (!docSnap.exists) {
+        print('No document found with id: $id');
+        return;
+      }
+
+      await docSnap.reference.delete();
+      print('Deleted pet document successfully.');
+
+      Map<String, dynamic> data = docSnap.data()
+          as Map<String, dynamic>; // Casting to Map<String, dynamic>
+      String imageUrl = data['imageUrl']; // Accessing the imageUrl
+
+      final refFromUrl = FirebaseStorage.instance.refFromURL(imageUrl);
+      await refFromUrl.delete();
+      print('Deleted pet image successfully.');
+
+      _pets.removeWhere((pet) => pet.id == id);
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting pet: $e');
+    }
   }
 
   Future<String> uploadImage(File imageFile) async {
