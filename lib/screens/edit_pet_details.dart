@@ -331,33 +331,13 @@ class _EditPetProfileState extends State<EditPetProfile> {
                           ),
                           SizedBox(height: 16.0),
                           ElevatedButton(
-                              onPressed: _saveChanges,
-                              child: Text('Save Changes'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade300,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                elevation: 0,
-                              )),
-                          Container(
-                            width: width * 0.3,
-                            height: 36.0,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8)),
-                                border: Border.all(
-                                    color: Colors.deepPurple.shade300)),
-                            child: ElevatedButton(
-                              onPressed: _deleteDialog,
-                              child: Text('Delete pet',
-                                  style:
-                                      TextStyle(color: Colors.deepPurple[300])),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                elevation: 0,
-                              ),
+                            onPressed: _saveChanges,
+                            child: Text('Save Changes'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple.shade300,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              elevation: 0,
                             ),
                           ),
                         ],

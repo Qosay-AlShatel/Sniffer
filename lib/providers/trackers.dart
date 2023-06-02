@@ -1,3 +1,4 @@
+import 'dart:async'; // Import for StreamSubscription
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,9 @@ class Trackers with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<Tracker> _trackers = [];
+
+  // Add a list to store active subscriptions
+  List<StreamSubscription> _subscriptions = [];
 
   List<Tracker> get trackers {
     return [..._trackers];
@@ -31,7 +35,7 @@ class Trackers with ChangeNotifier {
 
       _trackers = response.docs.map((doc) {
         // Listen to the document for real-time updates
-        _firestore
+        StreamSubscription subscription = _firestore
             .collection('trackers')
             .doc(doc.id)
             .snapshots()
@@ -48,6 +52,10 @@ class Trackers with ChangeNotifier {
             throw Exception('Tracker not found');
           }
         });
+
+        // Add subscription to the list
+        _subscriptions.add(subscription);
+
         final initialData = doc.data();
         return Tracker.fromMap(initialData, doc.id);
       }).toList();
@@ -55,6 +63,14 @@ class Trackers with ChangeNotifier {
     } catch (error) {
       throw error;
     }
+  }
+
+  // Add a method to cancel all active subscriptions
+  void cancelSubscriptions() {
+    for (var subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
   }
 
 // This method updates the tracker locally

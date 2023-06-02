@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-
+import 'package:provider/provider.dart';
+import '../providers/trackers.dart';
 import '../widgets/trackers_list.dart';
 import '../widgets/new_pet_form.dart';
 import '../widgets/new_tracker_form.dart';
@@ -101,10 +102,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                        iconSize: height * 0.04,
-                        color: Colors.black,
-                        icon: Icon(Icons.logout),
-                        onPressed: () => FirebaseAuth.instance.signOut()),
+                      iconSize: height * 0.04,
+                      color: Colors.black,
+                      icon: Icon(Icons.logout),
+                      onPressed: () {
+                        Provider.of<Trackers>(context, listen: false)
+                            .cancelSubscriptions();
+                        FirebaseAuth.instance.signOut();
+                      },
+                    ),
                     Container(
                       height: height * .25,
                       width: width * 0.25,
