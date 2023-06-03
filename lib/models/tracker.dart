@@ -5,6 +5,7 @@ class Tracker {
   String ownerId;
   double longitude;
   double latitude;
+  bool isDisabled;
 
   Tracker({
     required this.id,
@@ -13,6 +14,7 @@ class Tracker {
     required this.ownerId,
     required this.longitude,
     required this.latitude,
+    required this.isDisabled,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,7 +23,8 @@ class Tracker {
       'petId': petId,
       'ownerId': ownerId,
       'longitude': longitude,
-      'latitude': latitude
+      'latitude': latitude,
+      'isDisabled': isDisabled,
     };
   }
 
@@ -31,6 +34,7 @@ class Tracker {
     String? ownerId,
     double? longitude,
     double? latitude,
+    bool? isDisabled,
   }) {
     return Tracker(
       id: this.id,
@@ -39,6 +43,7 @@ class Tracker {
       ownerId: ownerId ?? this.ownerId,
       longitude: longitude ?? this.longitude,
       latitude: latitude ?? this.latitude,
+      isDisabled: isDisabled ?? this.isDisabled,
     );
   }
 
@@ -51,6 +56,7 @@ class Tracker {
       ownerId: data['ownerId'] ?? '',
       longitude: data['longitude'] ?? 0.0,
       latitude: data['latitude'] ?? 0.0,
+      isDisabled: data['isDisabled'] ?? false,
     );
   }
 }

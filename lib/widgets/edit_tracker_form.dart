@@ -43,6 +43,7 @@ class _EditTrackerFormState extends State<EditTrackerForm> {
       ownerId: widget.tracker.ownerId,
       longitude: widget.tracker.longitude,
       latitude: widget.tracker.latitude,
+      isDisabled: widget.tracker.isDisabled,
     );
 
     trackersProvider.updateTrackerDetails(updatedTracker, context);
