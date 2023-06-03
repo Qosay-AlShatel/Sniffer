@@ -47,24 +47,33 @@ class Fences with ChangeNotifier {
 
   Future<void> deleteFence(Fence fence, BuildContext context) async {
     print('Deleting fence with id: ${fence.id}');
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     try {
-      DocumentSnapshot docSnap = await FirebaseFirestore.instance
-          .collection('fences')
-          .doc(fence.id)
-          .get();
+      DocumentSnapshot docSnap =
+          await firestore.collection('fences').doc(fence.id).get();
 
       if (!docSnap.exists) {
         print('No document found with id: ${fence.id}');
         return;
       }
 
-      await docSnap.reference.delete();
-      print('Deleted fence document successfully.');
+      await firestore.runTransaction((Transaction transaction) async {
+        final petsQuery =
+            firestore.collection('pets').where('fenceId', isEqualTo: fence.id);
+        final petsSnapshot = await petsQuery.get();
 
-      Map<String, dynamic> data = docSnap.data()
-          as Map<String, dynamic>; // Casting to Map<String, dynamic>
-      String imageUrl = data['imageUrl']; // Accessing the imageUrl
+        for (final pet in petsSnapshot.docs) {
+          transaction.update(pet.reference, {'fenceId': ""});
+        }
+
+        transaction.delete(docSnap.reference);
+      });
+
+      print('Deleted fence document and updated pet references successfully.');
+
+      Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+      String imageUrl = data['imageUrl'];
 
       final refFromUrl = FirebaseStorage.instance.refFromURL(imageUrl);
       await refFromUrl.delete();
