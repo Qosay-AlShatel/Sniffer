@@ -65,13 +65,24 @@ class _TrackersListState extends State<TrackersList> {
               print('TrackersList: rendering tracker ${i + 1}');
               return GestureDetector(
                 onTap: () {
-                  // Here you can add code to handle what happens when a tracker is tapped
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Tracker ${trackers[i].title} tapped!'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  if (trackers[i].isDisabled)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Tracker ${trackers[i].title} is disabled!\n'
+                          'Please add a pet to enable it.',
+                          textAlign: TextAlign.center,
+                        ),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  else
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Tracker ${trackers[i].title} tapped!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                 },
                 child: TrackerView(tracker: trackers[i]),
               );

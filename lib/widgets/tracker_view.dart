@@ -18,6 +18,7 @@ class TrackerView extends StatelessWidget {
 
     return Card(
       child: ListTile(
+        enabled: !tracker.isDisabled,
         leading: CircleAvatar(
           backgroundImage: NetworkImage(pet?.imageUrl ?? ""),
         ),
@@ -25,25 +26,28 @@ class TrackerView extends StatelessWidget {
           tracker.title,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        subtitle:
-            Text('Tracking ${pet?.name ?? ""}'), // Displaying the pet name
+        subtitle: tracker.isDisabled
+            ? Text('No pet attached')
+            : Text('Tracking ${pet?.name ?? ""}'), // Displaying the pet name
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (ctx) => ChangeNotifierProvider.value(
-                      value: trackersProvider,
-                      child: EditTrackerForm(tracker: tracker),
-                    ),
-                  ),
-                );
-              },
-            ),
+            !tracker.isDisabled
+                ? IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => ChangeNotifierProvider.value(
+                            value: trackersProvider,
+                            child: EditTrackerForm(tracker: tracker),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : IconButton(icon: Icon(Icons.pets), onPressed: () {}),
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () async {

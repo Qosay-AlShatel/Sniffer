@@ -81,7 +81,7 @@ class Pets with ChangeNotifier {
       imageUrl: pet.imageUrl,
       description: pet.description,
       ownerId: user.uid,
-      fenceId: pet.fenceId, // assign fenceId to the new pet
+      fenceId: pet.fenceId,
     );
 
     DocumentReference docRef;
@@ -92,7 +92,7 @@ class Pets with ChangeNotifier {
         'imageUrl': newPet.imageUrl,
         'description': newPet.description,
         'ownerId': user.uid,
-        'fenceId': newPet.fenceId, // store fenceId in Firestore
+        'fenceId': newPet.fenceId,
       });
     } catch (error) {
       print('Error adding pet to Firestore: $error');
@@ -122,8 +122,6 @@ class Pets with ChangeNotifier {
     print('Pet added successfully: ${createdPet.id}');
     return createdPet;
   }
-
-// in pets.dart
 
   Future<void> updatePet(String id, String name, int age, String description,
       String imageUrl, String ownerId, String fenceId) async {
@@ -169,6 +167,8 @@ class Pets with ChangeNotifier {
   }
 
   Future<void> deletePet(String id, BuildContext context) async {
+    print('Deleting pet with id: ${id}');
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
     try {
       DocumentSnapshot docSnap =
           await FirebaseFirestore.instance.collection('pets').doc(id).get();
@@ -178,12 +178,22 @@ class Pets with ChangeNotifier {
         return;
       }
 
-      await docSnap.reference.delete();
-      print('Deleted pet document successfully.');
+      await firestore.runTransaction((Transaction transaction) async {
+        final trackersQuery =
+            firestore.collection('trackers').where('petId', isEqualTo: id);
+        final trackersSnapshot = await trackersQuery.get();
 
-      Map<String, dynamic> data = docSnap.data()
-          as Map<String, dynamic>; // Casting to Map<String, dynamic>
-      String imageUrl = data['imageUrl']; // Accessing the imageUrl
+        for (final tracker in trackersSnapshot.docs) {
+          transaction.update(tracker.reference, {'isDisabled': true});
+        }
+
+        transaction.delete(docSnap.reference);
+      });
+
+      print('Deleted pet document and updates tracker reference successfully.');
+
+      Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+      String imageUrl = data['imageUrl'];
 
       final refFromUrl = FirebaseStorage.instance.refFromURL(imageUrl);
       await refFromUrl.delete();

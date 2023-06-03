@@ -65,7 +65,6 @@ class Trackers with ChangeNotifier {
     }
   }
 
-  // Add a method to cancel all active subscriptions
   void cancelSubscriptions() {
     for (var subscription in _subscriptions) {
       subscription.cancel();
@@ -73,19 +72,17 @@ class Trackers with ChangeNotifier {
     _subscriptions.clear();
   }
 
-// This method updates the tracker locally
-  void updateLocalTracker(Tracker updatedTracker) {
-    int index =
-        _trackers.indexWhere((tracker) => tracker.id == updatedTracker.id);
-    if (index != -1) {
-      _trackers[index] = updatedTracker;
-      notifyListeners();
-    } else {
-      throw Exception('Tracker not found');
-    }
-  }
+  // void updateLocalTracker(Tracker updatedTracker) {
+  //   int index =
+  //       _trackers.indexWhere((tracker) => tracker.id == updatedTracker.id);
+  //   if (index != -1) {
+  //     _trackers[index] = updatedTracker;
+  //     notifyListeners();
+  //   } else {
+  //     throw Exception('Tracker not found');
+  //   }
+  // }
 
-// This method updates the tracker in Firestore and locally
   Future<void> updateTrackerDetails(
       Tracker tracker, BuildContext context) async {
     try {
@@ -97,10 +94,8 @@ class Trackers with ChangeNotifier {
       int index = _trackers
           .indexWhere((existingTracker) => existingTracker.id == tracker.id);
       if (index != -1) {
-        // Update the tracker locally as well
         _trackers[index] = tracker;
       } else {
-        // Tracker not found locally, add it to the list
         _trackers.add(tracker);
       }
       notifyListeners();
@@ -117,6 +112,7 @@ class Trackers with ChangeNotifier {
         'ownerId': FieldValue.delete(),
         'title': FieldValue.delete(),
         'petId': FieldValue.delete(),
+        'isDisabled': FieldValue.delete(),
       });
 
       _trackers
