@@ -67,12 +67,6 @@ class _NewPetFormState extends State<NewPetForm> {
 
   Future<void> _addPet() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please sign in before adding a pet')),
-      );
-      return;
-    }
 
     if (_formKey.currentState!.validate() && _pickedImage != null) {
       _formKey.currentState!.save();
@@ -100,7 +94,7 @@ class _NewPetFormState extends State<NewPetForm> {
           age: _age!,
           description: _description!,
           imageUrl: imageUrl,
-          ownerId: user.uid,
+          ownerId: user!.uid,
           fenceId: _fenceId ?? '',
         );
 

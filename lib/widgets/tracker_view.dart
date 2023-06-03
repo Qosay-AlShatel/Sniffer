@@ -33,21 +33,15 @@ class TrackerView extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () async {
-                // Receive the updated tracker from EditTrackerForm
-                final updatedTracker = await Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (ctx) => ChangeNotifierProvider.value(
-                      value:
-                          trackersProvider, // Using existing provider instance instead of creating new one
+                      value: trackersProvider,
                       child: EditTrackerForm(tracker: tracker),
                     ),
                   ),
                 );
-                // If there is an updated tracker, update it locally
-                if (updatedTracker != null) {
-                  trackersProvider.updateLocalTracker(updatedTracker);
-                }
               },
             ),
             IconButton(

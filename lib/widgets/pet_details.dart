@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import '../screens/edit_pet_details.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
-import '../models/pet.dart';
 import '../providers/pets.dart';
 
 class PetDetails extends StatefulWidget {
-  final Pet pet;
-  const PetDetails({Key? key, required this.pet}) : super(key: key);
+  final String petId;
+  const PetDetails({Key? key, required this.petId}) : super(key: key);
 
   @override
   State<PetDetails> createState() => _PetDetailsState();
 }
 
 class _PetDetailsState extends State<PetDetails> {
+  bool _isDeleted = false;
+
   bool _isLoading = false;
 
   void _setLoading(bool value) {
@@ -24,6 +25,17 @@ class _PetDetailsState extends State<PetDetails> {
 
   @override
   Widget build(BuildContext contextt) {
+    if (_isDeleted) {
+      return Center(
+          child: CircularProgressIndicator()); // Or some other placeholder UI
+    }
+
+    final pet = Provider.of<Pets>(context, listen: true).findById(widget.petId);
+    final name = pet!.name;
+    final imageUrl = pet.imageUrl;
+    final age = pet.age;
+    final description = pet.description;
+
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
@@ -32,9 +44,9 @@ class _PetDetailsState extends State<PetDetails> {
         context: context,
         builder: (context) {
           return CupertinoAlertDialog(
-            title: Text("Delete ${widget.pet.name}"),
+            title: Text("Delete ${name}"),
             content: Text(
-                "Are you sure you want to delete ${widget.pet.name}? This action is not reversible."),
+                "Are you sure you want to delete ${name}? This action is not reversible."),
             actions: [
               CupertinoDialogAction(
                 onPressed: () async {
@@ -42,7 +54,8 @@ class _PetDetailsState extends State<PetDetails> {
                   Navigator.pop(context);
 
                   await Provider.of<Pets>(context, listen: false)
-                      .deletePet(widget.pet.id, context);
+                      .deletePet(widget.petId, context);
+                  _isDeleted = true;
                   Navigator.pop(contextt);
                   _setLoading(false);
                 },
@@ -63,7 +76,7 @@ class _PetDetailsState extends State<PetDetails> {
         appBar: AppBar(
             centerTitle: true,
             title: Text(
-              widget.pet.name.toUpperCase(),
+              name.toUpperCase(),
               style: TextStyle(color: Colors.deepPurple),
             ),
             elevation: 0,
@@ -77,7 +90,7 @@ class _PetDetailsState extends State<PetDetails> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => EditPetProfile(pet: widget.pet))),
+                        builder: (context) => EditPetProfile(pet: pet))),
                 icon: Icon(Icons.edit),
                 color: Colors.deepPurple.shade300,
               ),
@@ -91,7 +104,7 @@ class _PetDetailsState extends State<PetDetails> {
                     height: height * 0.50,
                     width: width * 0.65,
                     child: Image.network(
-                      widget.pet.imageUrl,
+                      imageUrl,
                       fit: BoxFit.cover,
                     ))),
             Positioned(
@@ -112,13 +125,12 @@ class _PetDetailsState extends State<PetDetails> {
                                 PetFeature(
                                   widget: widget,
                                   feature: 'Name',
-                                  text: widget.pet.name,
+                                  text: name,
                                 ),
                                 PetFeature(
                                   widget: widget,
                                   feature: 'Age',
-                                  text:
-                                      widget.pet.age.toString() + ' years old',
+                                  text: age.toString() + ' years old',
                                 ),
                               ],
                             ),
@@ -151,7 +163,7 @@ class _PetDetailsState extends State<PetDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.pet.name,
+                                name,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -159,7 +171,7 @@ class _PetDetailsState extends State<PetDetails> {
                                 ),
                               ),
                               SizedBox(height: 10),
-                              Text(widget.pet.age.toString() + ' years old',
+                              Text(age.toString() + ' years old',
                                   style: TextStyle(
                                       color: Colors.white70,
                                       fontSize: 24.0,
@@ -170,7 +182,7 @@ class _PetDetailsState extends State<PetDetails> {
                       ),
                       SizedBox(height: 15),
                       Expanded(
-                          child: Text(widget.pet.description,
+                          child: Text(description,
                               textAlign: TextAlign.justify,
                               style: TextStyle(
                                   height: 1.5,

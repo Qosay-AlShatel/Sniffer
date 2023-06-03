@@ -4,7 +4,7 @@ class Pet {
   final String id;
   final String name;
   final int age;
-  final String imageUrl;
+  String imageUrl;
   final String description;
   final String ownerId;
   final String fenceId; // New field for fenceId

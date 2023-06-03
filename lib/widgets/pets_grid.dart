@@ -20,11 +20,15 @@ class _PetsGridState extends State<PetsGrid> {
     setState(() {
       _isLoading = true;
     });
-    Provider.of<Pets>(context, listen: false).fetchPets().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    Provider.of<Pets>(context, listen: false).fetchPets().then(
+      (_) {
+        setState(
+          () {
+            _isLoading = false;
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -41,8 +45,9 @@ class _PetsGridState extends State<PetsGrid> {
     return _isLoading
         ? Center(
             child: CircularProgressIndicator(
-            color: Colors.deepPurple[300],
-          ))
+              color: Colors.deepPurple[300],
+            ),
+          )
         : GridView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: pets.length,
@@ -50,7 +55,7 @@ class _PetsGridState extends State<PetsGrid> {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PetDetails(pet: pets[i]),
+                  builder: (context) => PetDetails(petId: pets[i].id),
                 ),
               ),
               child: PetView(index: i),

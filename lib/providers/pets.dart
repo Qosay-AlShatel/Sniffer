@@ -150,7 +150,7 @@ class Pets with ChangeNotifier {
   }
 
   Future<String> uploadImage(File imageFile) async {
-    String fileName = 'users/${DateTime.now().toIso8601String()}.jpg';
+    String fileName = 'pets/${DateTime.now().toIso8601String()}.jpg';
     final storageRef = FirebaseStorage.instance.ref().child(fileName);
 
     final UploadTask uploadTask = storageRef.putFile(imageFile);
@@ -158,6 +158,14 @@ class Pets with ChangeNotifier {
     final String downloadUrl = await storageRef.getDownloadURL();
 
     return downloadUrl;
+  }
+
+  Future<String> deleteImage(String imageUrl) async {
+    final refFromUrl = FirebaseStorage.instance.refFromURL(imageUrl);
+    await refFromUrl.delete();
+    print('Deleted pet image successfully.');
+
+    return 'Deleted pet image successfully.';
   }
 
   Future<void> deletePet(String id, BuildContext context) async {

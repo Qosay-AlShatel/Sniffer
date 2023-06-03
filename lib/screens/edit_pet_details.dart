@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../providers/fences.dart';
 import '../providers/pets.dart';
@@ -49,6 +47,7 @@ class _EditPetProfileState extends State<EditPetProfile> {
       final initialName = widget.pet.name;
       final initialAge = widget.pet.age.toString();
       final initialDesc = widget.pet.description;
+
       _nameController = TextEditingController(text: initialName);
       _ageController = TextEditingController(text: initialAge);
       _descController = TextEditingController(text: initialDesc);
@@ -59,7 +58,6 @@ class _EditPetProfileState extends State<EditPetProfile> {
     });
   }
 
-  File? pickedImage;
   Future<void> _selectImageFromGallery() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
@@ -68,25 +66,19 @@ class _EditPetProfileState extends State<EditPetProfile> {
       source: ImageSource.gallery,
     );
 
-    setState(() {
-      if (pickedImageFile != null) {
-        pickedImage = File(pickedImageFile.path);
-      }
-    });
+    if (pickedImageFile != null) {
+      File pickedImage = File(pickedImageFile.path);
+      await Provider.of<Pets>(context, listen: false)
+          .deleteImage(widget.pet.imageUrl);
+      final newImageUrl = await Provider.of<Pets>(context, listen: false)
+          .uploadImage(pickedImage);
+      setState(() {
+        widget.pet.imageUrl = newImageUrl;
+      });
+    }
   }
 
   Future<void> _saveChanges() async {
-    String imageUrl;
-    try {
-      imageUrl = await Provider.of<Pets>(context, listen: false)
-          .uploadImage(pickedImage!);
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading image: $error')),
-      );
-      _setLoading(false);
-      return;
-    }
     if (_formKey.currentState!.validate()) {
       try {
         final name = _nameController.text.trim();
@@ -96,7 +88,13 @@ class _EditPetProfileState extends State<EditPetProfile> {
         final fenceId = _selectedFenceId;
         if (name.isNotEmpty && age != null && desc.isNotEmpty) {
           await Provider.of<Pets>(context, listen: false).updatePet(
-              widget.pet.id, name, age, desc, imageUrl, ownerId, fenceId!);
+              widget.pet.id,
+              name,
+              age,
+              desc,
+              widget.pet.imageUrl,
+              ownerId,
+              fenceId!);
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -318,14 +316,15 @@ class _EditPetProfileState extends State<EditPetProfile> {
                           ),
                           SizedBox(height: 16.0),
                           ElevatedButton(
-                              onPressed: _saveChanges,
-                              child: Text('Save Changes'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade300,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                elevation: 0,
-                              )),
+                            onPressed: _saveChanges,
+                            child: Text('Save Changes'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple.shade300,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              elevation: 0,
+                            ),
+                          ),
                         ],
                       ),
                     ),
