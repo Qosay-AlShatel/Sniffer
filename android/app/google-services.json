@@ -1,34 +1,77 @@
 {
   "project_info": {
-    "project_number": "793730118238",
-    "project_id": "sniffer-de62b",
-    "storage_bucket": "sniffer-de62b.appspot.com"
+    "project_number": "635921452897",
+    "project_id": "snifferpettracker",
+    "storage_bucket": "snifferpettracker.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:793730118238:android:f2313a1ae36572ec12bacf",
+        "mobilesdk_app_id": "1:635921452897:android:c74e028555c50cde54ff20",
         "android_client_info": {
-          "package_name": "com.example.sniffer_pettracking_app"
+          "package_name": "com.example.sniffer_pet_tracker"
         }
       },
       "oauth_client": [
         {
-          "client_id": "793730118238-6oj0en3m6c8sh9svqk91k20qo01v6lb6.apps.googleusercontent.com",
+          "client_id": "635921452897-eojh7ukvgmatgmss0ba7gjfl9jnlgudh.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDNhuwIg05SsZWdE1VcQG6soT6f631xcFM"
+          "current_key": "AIzaSyBNinyfn__zvfurgZDYZsUj9VhC3ZzVZ84"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "793730118238-6oj0en3m6c8sh9svqk91k20qo01v6lb6.apps.googleusercontent.com",
+              "client_id": "635921452897-eojh7ukvgmatgmss0ba7gjfl9jnlgudh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "635921452897-v09f4ogae748s76ufi2eio1mp18q672b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.snifferPettrackingApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635921452897:android:5df050a5eaa9011d54ff20",
+        "android_client_info": {
+          "package_name": "com.example.sniffer_pettracking_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "635921452897-eojh7ukvgmatgmss0ba7gjfl9jnlgudh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNinyfn__zvfurgZDYZsUj9VhC3ZzVZ84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "635921452897-eojh7ukvgmatgmss0ba7gjfl9jnlgudh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "635921452897-v09f4ogae748s76ufi2eio1mp18q672b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.snifferPettrackingApp"
+              }
             }
           ]
         }

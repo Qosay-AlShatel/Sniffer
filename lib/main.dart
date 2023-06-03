@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sniffer_pettracking_app/firebase_options.dart';
 
 import './providers/pets.dart';
 import './screens/home_screen.dart';
@@ -10,10 +12,37 @@ import './screens/auth_screen.dart';
 import './screens/onBoarding_screens/onBoarding_screens.dart';
 import 'providers/fences.dart';
 import 'providers/trackers.dart';
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
+  print("Handling a background message: ${message.messageId}");
+}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+
+  /*NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );*/
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
   runApp(MyApp());
 }
 
