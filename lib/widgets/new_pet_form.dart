@@ -75,7 +75,6 @@ class _NewPetFormState extends State<NewPetForm> {
 
       String imageUrl;
       try {
-        // Use the provider to upload the image
         imageUrl = await Provider.of<Pets>(context, listen: false)
             .uploadImage(_pickedImage!);
       } catch (error) {

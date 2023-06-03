@@ -132,6 +132,11 @@ class _PetDetailsState extends State<PetDetails> {
                                   feature: 'Age',
                                   text: age.toString() + ' years old',
                                 ),
+                                PetFeature(
+                                  widget: widget,
+                                  feature: 'Fence',
+                                  text: age.toString() + ' years old',
+                                ),
                               ],
                             ),
                           )),

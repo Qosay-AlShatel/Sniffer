@@ -260,95 +260,99 @@ class _NewFenceFormState extends State<NewFenceForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        title: Text('Add New Fence'),
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
-        ),
-        actions: [
-          IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () async {
-                _onSubmit();
-              }),
-        ],
-      ),
-      body: FutureBuilder<LatLng>(
-        future: _initLocation,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          return Stack(
-            children: [
-              RepaintBoundary(
-                key: _mapKey,
-                child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  onTap: _onMapTapped,
-                  markers: _markers,
-                  polygons: _polygons,
-                  initialCameraPosition: CameraPosition(
-                    target: snapshot.data!,
-                    zoom: 17,
-                  ),
-                ),
-              ),
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Fence Title',
-                            border: OutlineInputBorder(),
-                            focusColor: Colors.deepPurple.withOpacity(0.2)),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Please enter a fence title';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _fenceTitle = value!;
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Tap on the map to add points for your fence.',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple[300]),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.black,
+            title: Text('Add New Fence'),
+            leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back_ios_new_rounded),
+            ),
+            actions: [
+              IconButton(
+                  icon: Icon(Icons.check),
+                  onPressed: () async {
+                    _onSubmit();
+                  }),
             ],
-          );
-        },
-      ),
+          ),
+          body: FutureBuilder<LatLng>(
+            future: _initLocation,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              return Stack(
+                children: [
+                  RepaintBoundary(
+                    key: _mapKey,
+                    child: GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      onTap: _onMapTapped,
+                      markers: _markers,
+                      polygons: _polygons,
+                      initialCameraPosition: CameraPosition(
+                        target: snapshot.data!,
+                        zoom: 17,
+                      ),
+                    ),
+                  ),
+                  Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            decoration: InputDecoration(
+                                labelText: 'Fence Title',
+                                border: OutlineInputBorder(),
+                                focusColor: Colors.deepPurple.withOpacity(0.2)),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter a fence title';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _fenceTitle = value!;
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Tap on the map to add points for your fence.',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepPurple[300]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      ],
     );
   }
 }
