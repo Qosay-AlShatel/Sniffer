@@ -72,17 +72,6 @@ class Trackers with ChangeNotifier {
     _subscriptions.clear();
   }
 
-  // void updateLocalTracker(Tracker updatedTracker) {
-  //   int index =
-  //       _trackers.indexWhere((tracker) => tracker.id == updatedTracker.id);
-  //   if (index != -1) {
-  //     _trackers[index] = updatedTracker;
-  //     notifyListeners();
-  //   } else {
-  //     throw Exception('Tracker not found');
-  //   }
-  // }
-
   Future<void> updateTrackerDetails(
       Tracker tracker, BuildContext context) async {
     try {
