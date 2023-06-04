@@ -8,6 +8,8 @@ import '../providers/fences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MapPage extends StatefulWidget {
+  final String? trackerId;
+  MapPage({this.trackerId});
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -38,6 +40,14 @@ class _MapPageState extends State<MapPage> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    if (_selectedTracker != null) {
+      final tracker = Provider.of<Trackers>(context, listen: false)
+          .findById(_selectedTracker!);
+      _mapController.moveCamera(CameraUpdate.newLatLng(
+        LatLng(tracker.latitude, tracker.longitude),
+      ));
+      _mapController.moveCamera(CameraUpdate.zoomTo(17.0));
+    }
   }
 
   void _updateMarkersAndPolygons() {
@@ -82,11 +92,15 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void initState() {
+    print('id  =  ${widget.trackerId}');
+
     super.initState();
+    _selectedTracker = widget.trackerId;
     _requestPermission();
     setState(() {
       _isLoading = true;
     });
+
     marker = _createInitialMarker();
     Provider.of<Trackers>(context, listen: false)
         .fetchAndSetTrackers()
@@ -152,7 +166,7 @@ class _MapPageState extends State<MapPage> {
                           onMapCreated: _onMapCreated,
                           initialCameraPosition: CameraPosition(
                             target: snapshot.data!.position,
-                            zoom: 14.0,
+                            zoom: 17.0,
                           ),
                           markers: markers,
                           polygons: polygons,
@@ -177,19 +191,27 @@ class _MapPageState extends State<MapPage> {
                     setState(() {
                       _selectedTracker = value;
                     });
-                    Future.delayed(Duration.zero, () {
-                      _updateMarkersAndPolygons();
+                    Future.delayed(
+                      Duration.zero,
+                      () {
+                        _updateMarkersAndPolygons();
 
-                      var selectedTracker = trackers.firstWhere(
-                          (tracker) => tracker.id == _selectedTracker);
-                      _mapController.moveCamera(
-                        CameraUpdate.newLatLng(
-                          LatLng(selectedTracker.latitude,
-                              selectedTracker.longitude),
-                        ),
-                      );
-                      _mapController.moveCamera(CameraUpdate.zoomTo(17.0));
-                    });
+                        final trackers =
+                            Provider.of<Trackers>(context, listen: false)
+                                .trackers;
+                        var selectedTracker = trackers.firstWhere(
+                            (tracker) => tracker.id == _selectedTracker);
+                        _mapController.moveCamera(
+                          CameraUpdate.newLatLng(
+                            LatLng(selectedTracker.latitude,
+                                selectedTracker.longitude),
+                          ),
+                        );
+                        _mapController.moveCamera(
+                          CameraUpdate.zoomTo(17.5),
+                        );
+                      },
+                    );
                   },
                 ),
               ),
