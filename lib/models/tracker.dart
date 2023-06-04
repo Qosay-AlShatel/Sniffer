@@ -28,6 +28,18 @@ class Tracker {
     };
   }
 
+  Tracker findById(String id) {
+    return Tracker(
+      id: id,
+      title: title,
+      petId: petId,
+      ownerId: ownerId,
+      longitude: longitude,
+      latitude: latitude,
+      isDisabled: isDisabled,
+    );
+  }
+
   Tracker copyWith({
     String? title,
     String? petId,

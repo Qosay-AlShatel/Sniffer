@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final refreshNotifier = ValueNotifier<bool>(false);
+  String? _selectedTracker;
 
   final user = FirebaseAuth.instance.currentUser!;
   int _selectedIndex = 0;
@@ -72,16 +73,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-
     final List<Widget> _pages = [
-      TrackersList(),
+      TrackersList(
+        onPageChange: (int pageIndex, String trackerId) {
+          setState(() {
+            _selectedIndex = pageIndex;
+            _selectedTracker = trackerId;
+          });
+        },
+      ),
       PetsGrid(),
       FencesGrid(),
-      MapPage(),
+      MapPage(trackerId: _selectedTracker),
     ];
 
     return Scaffold(
-      //backgroundColor: Color.fromRGBO(192, 192, 192, 1.0),
       body: Container(
         width: double.infinity,
         child: Column(
@@ -92,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 padding: EdgeInsets.only(top: 8),
                 decoration: BoxDecoration(
-                    color: Colors.white, //Color.fromRGBO(192, 192, 192, 1.0),
+                    color: Colors.white,
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),

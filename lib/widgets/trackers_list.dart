@@ -5,7 +5,8 @@ import '../providers/pets.dart';
 import './tracker_view.dart';
 
 class TrackersList extends StatefulWidget {
-  const TrackersList({Key? key}) : super(key: key);
+  final Function onPageChange;
+  const TrackersList({Key? key, required this.onPageChange}) : super(key: key);
 
   @override
   _TrackersListState createState() => _TrackersListState();
@@ -77,12 +78,7 @@ class _TrackersListState extends State<TrackersList> {
                       ),
                     );
                   else
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Tracker ${trackers[i].title} tapped!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    widget.onPageChange(3, trackers[i].id);
                 },
                 child: TrackerView(tracker: trackers[i]),
               );

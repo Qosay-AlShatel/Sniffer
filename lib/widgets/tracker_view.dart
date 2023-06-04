@@ -10,6 +10,41 @@ class TrackerView extends StatelessWidget {
 
   const TrackerView({Key? key, required this.tracker}) : super(key: key);
 
+  void _showPetsDialog(BuildContext context) {
+    final petsProvider = Provider.of<Pets>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Choose a pet'),
+        content: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.black),
+          ),
+          height: MediaQuery.of(context).size.height * 0.15,
+          width: double.maxFinite,
+          child: ListView.builder(
+            itemCount: petsProvider.pets.length,
+            itemBuilder: (ctx, i) => ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(petsProvider.pets[i].imageUrl),
+              ),
+              title: Text(petsProvider.pets[i].name),
+              onTap: () {
+                Navigator.of(context).pop();
+                tracker.petId = petsProvider.pets[i].id;
+                tracker.isDisabled = false;
+                Provider.of<Trackers>(context, listen: false)
+                    .updateTrackerDetails(tracker, context);
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final trackersProvider = Provider.of<Trackers>(context, listen: false);
@@ -47,7 +82,9 @@ class TrackerView extends StatelessWidget {
                       );
                     },
                   )
-                : IconButton(icon: Icon(Icons.pets), onPressed: () {}),
+                : IconButton(
+                    icon: Icon(Icons.pets),
+                    onPressed: () => _showPetsDialog(context)),
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () async {

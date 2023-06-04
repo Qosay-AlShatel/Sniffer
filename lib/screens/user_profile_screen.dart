@@ -252,14 +252,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ]),
                     SizedBox(height: 10),
                     SizedBox(
-                        width: width * 0.4,
-                        child: Center(
-                          child: Text('${_currentUser.displayName}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                //fontSize: 18
-                              )),
-                        )),
+                      width: width * 0.4,
+                      child: Center(
+                        child: Text(
+                          '${_currentUser.displayName}',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 30),
                     Form(
                       key: _formKey,
