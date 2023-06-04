@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../providers/fences.dart';
@@ -106,6 +107,20 @@ class _EditPetProfileState extends State<EditPetProfile> {
               ownerId,
               fenceId!);
 
+          if(fenceId.isEmpty) {
+            try {
+              await FirebaseMessaging.instance.unsubscribeFromTopic('geofence_alerts');
+              print('Unsubscribed from geofence_alerts topic');
+            } catch (e) {
+              print('Failed to unsubscribe from geofence_alerts topic: $e');
+            }
+          } else{
+            FirebaseMessaging.instance.subscribeToTopic('geofence_alerts').then((value) {
+              print('Subscribed to geofence_alerts topic!');
+            }).catchError((error) {
+              print('Failed to subscribe to geofence_alerts topic: $error');
+            });
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Pet profile updated successfully!'),

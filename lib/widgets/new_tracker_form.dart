@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/trackers.dart';
@@ -90,6 +91,14 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
 
     Provider.of<Trackers>(context, listen: false)
         .updateTrackerDetails(_newTracker, context);
+    setState((){
+      // Subscribe to geofence_alerts topic
+      FirebaseMessaging.instance.subscribeToTopic('geofence_alerts').then((value) {
+        print('Subscribed to geofence_alerts topic!');
+      }).catchError((error) {
+        print('Failed to subscribe to geofence_alerts topic: $error');
+      });
+    });
   }
 
   @override
