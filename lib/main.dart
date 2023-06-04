@@ -11,8 +11,6 @@ import './screens/auth_screen.dart';
 import './screens/onBoarding_screens/onBoarding_screens.dart';
 import 'providers/fences.dart';
 import 'providers/trackers.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
