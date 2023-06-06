@@ -27,12 +27,15 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   vector_math: ^2.1.4
   firebase_messaging:
-  get: ^4.6.5
+  point_in_polygon: ^1.0.0
+  maps_toolkit: ^2.0.1
+  flutter_local_notifications: ^14.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
+  dart_code_metrics:
 
 flutter:
   uses-material-design: true
@@ -40,3 +43,5 @@ flutter:
   assets:
     - assets/images/2.png
     - assets/images/1.png
+    - assets/animations/1.json
+    - assets/animations/2.json

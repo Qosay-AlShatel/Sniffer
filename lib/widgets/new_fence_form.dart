@@ -35,6 +35,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
   Set<Marker> _markers = {};
   Set<Polygon> _polygons = {};
   late Future<LatLng> _initLocation;
+  late LatLng pointCache;
 
   @override
   void initState() {
@@ -89,7 +90,8 @@ class _NewFenceFormState extends State<NewFenceForm> {
           position: latLng,
         ),
       );
-
+      //Cache the added point for undo/redo
+      pointCache = latLng;
       // Update the polygon if there are at least 3 points
       if (_fenceCoordinates.length >= 3) {
         _polygons.clear();
@@ -102,6 +104,27 @@ class _NewFenceFormState extends State<NewFenceForm> {
         ));
       }
     });
+  }
+  void removePoint() {
+    setState(() {
+      if(_fenceCoordinates.isNotEmpty) {
+        pointCache = _fenceCoordinates.removeLast();
+      }
+      if (_fenceCoordinates.length >= 3) {
+        _polygons.clear();
+        _polygons.add(Polygon(
+          polygonId: PolygonId('geofence'),
+          points: _fenceCoordinates,
+          strokeWidth: 2,
+          strokeColor: Colors.deepPurple,
+          fillColor: Colors.deepPurple.withOpacity(0.2),
+        ));
+      }
+    });
+  }
+
+  void redoPoint() {
+      _onMapTapped(pointCache);
   }
 
   bool _isSelfIntersecting() {
@@ -298,7 +321,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
                     child: GoogleMap(
                       onMapCreated: _onMapCreated,
                       onTap: _onMapTapped,
-                      markers: _markers,
+                      //markers: _markers,
                       polygons: _polygons,
                       initialCameraPosition: CameraPosition(
                         target: snapshot.data!,
@@ -340,6 +363,32 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       ),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Row(
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple[200],
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(12)
+                          ),
+                          onPressed: removePoint,
+                          child: Icon(Icons.arrow_back),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple[200],
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(12)
+                          ),
+                          onPressed: redoPoint,
+                          child: Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 ],
               );
             },

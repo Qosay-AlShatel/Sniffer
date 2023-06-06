@@ -98,6 +98,8 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
       }).catchError((error) {
         print('Failed to subscribe to geofence_alerts topic: $error');
       });
+
+
     });
   }
 

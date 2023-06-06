@@ -15,8 +15,7 @@ class onBoardingScreen2 extends StatelessWidget {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.network(
-              'https://assets10.lottiefiles.com/packages/lf20_Q1pZ8v.json'),
+          Lottie.asset('assets/animations/1.json'),
           Text("Never lose your pet again!",
               style: GoogleFonts.bebasNeue(fontSize: 30, color: Colors.white)),
         ],

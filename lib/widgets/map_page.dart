@@ -6,6 +6,7 @@ import '../providers/trackers.dart';
 import '../providers/pets.dart';
 import '../providers/fences.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:point_in_polygon/point_in_polygon.dart';
 
 class MapPage extends StatefulWidget {
   final String? trackerId;
@@ -17,11 +18,13 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   late Future<Marker> marker;
   bool _isLoading = false;
+  bool _isOutsideGeofence = false;
 
   late GoogleMapController _mapController;
   String? _selectedTracker;
   Set<Marker> markers = {};
   Set<Polygon> polygons = {};
+  late Polygon selectedPolygonFence;
 
   Future<LatLng> _getCurrentLocation() async {
     // Request location permission
@@ -76,15 +79,18 @@ class _MapPageState extends State<MapPage> {
             Provider.of<Fences>(context, listen: false).findById(pet.fenceId);
         if (fence != null) {
           // Add polygon for the selected fence
-          polygons.add(Polygon(
+          selectedPolygonFence = Polygon(
             polygonId: PolygonId(fence.id),
             points: fence.coordinates
                 .map((v) => LatLng(v.latitude, v.longitude))
                 .toList(),
-            strokeColor: Colors.red,
+            strokeColor: Colors.deepPurple,
             strokeWidth: 1,
-            fillColor: Colors.red.withOpacity(0.5),
-          ));
+            fillColor: Colors.deepPurple.withOpacity(0.5),
+          );
+          polygons.add(selectedPolygonFence);
+          Point current = Point(x: tracker.longitude, y: tracker.latitude);
+          _isOutsideGeofence = _checkGeofence(current, selectedPolygonFence);
         }
       }
     }
@@ -131,6 +137,15 @@ class _MapPageState extends State<MapPage> {
     final info = statuses[Permission.location].toString();
     print('Location Permission Status: $info');
   }
+  bool _checkGeofence(Point point, Polygon polygon) {
+    print('CHECKING GEOFENCE!');
+    final List<LatLng> pointsLatLng = polygon.points;
+    final List<Point> points = pointsLatLng.map((latLng) {
+      return Point(x: latLng.latitude, y: latLng.longitude);
+    }).toList();
+    return !Poly.isPointInPolygon(point, points);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -177,6 +192,16 @@ class _MapPageState extends State<MapPage> {
                       return Container();
                     }
                   },
+                ),
+                if(_isOutsideGeofence)
+                      Center(
+                        child: Text("You pet is outside the geofence!",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      )
                 )
               ],
             ),
@@ -210,6 +235,9 @@ class _MapPageState extends State<MapPage> {
                         _mapController.moveCamera(
                           CameraUpdate.zoomTo(17.5),
                         );
+                        Point point = Point(x: selectedTracker.latitude,
+                            y:selectedTracker.longitude);
+                        _isOutsideGeofence = _checkGeofence(point, selectedPolygonFence);
                       },
                     );
                   },

@@ -64,15 +64,6 @@ class Fences with ChangeNotifier {
             firestore.collection('pets').where('fenceId', isEqualTo: fence.id);
         final petsSnapshot = await petsQuery.get();
 
-        //UNSUBSCRIBE IF THERE ARE PETS USING THIS FENCE
-        if(petsSnapshot.docs.isNotEmpty){
-          try {
-            await FirebaseMessaging.instance.unsubscribeFromTopic('geofence_alerts');
-            print('Unsubscribed from geofence_alerts topic');
-          } catch (e) {
-            print('Failed to unsubscribe from geofence_alerts topic: $e');
-          }
-        }
         for (final pet in petsSnapshot.docs) {
           transaction.update(pet.reference, {'fenceId': ""});
         }

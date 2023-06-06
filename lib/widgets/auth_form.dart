@@ -41,7 +41,7 @@ class _AuthFormState extends State<AuthForm> {
       bool hasLowercase = password.contains(RegExp(r'[a-z]'));
       bool hasSpecialCharacters =
           password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-      bool hasMinLength = password.length >= 8;
+      bool hasMinLength = (password.length >= 8 && password.length <=15);
 
       return hasDigits &
           hasUppercase &

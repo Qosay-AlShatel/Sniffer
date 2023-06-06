@@ -14,8 +14,7 @@ class onBoardingScreen1 extends StatelessWidget {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.network(
-              'https://assets10.lottiefiles.com/packages/lf20_itqodaed.json'),
+          Lottie.asset('assets/animations/2.json'),
           Text("Welcome to Sniffer",
               style: GoogleFonts.bebasNeue(
                   fontSize: 40, color: Colors.deepPurple[500])),
