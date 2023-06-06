@@ -66,6 +66,28 @@ class _EditPetProfileState extends State<EditPetProfile> {
     });
   }
 
+  Future<void> _selectImageFromCamera() async {
+    final ImagePicker _picker = ImagePicker();
+    final pickedImageFile = await _picker.pickImage(
+      imageQuality: 50,
+      maxWidth: 150,
+      source: ImageSource.camera,
+    );
+
+    if (pickedImageFile != null) {
+      File pickedImage = File(pickedImageFile.path);
+      await Provider.of<Pets>(context, listen: false)
+          .deleteImage(widget.pet.imageUrl);
+      _setIsUploadingImage(true);
+      final newImageUrl = await Provider.of<Pets>(context, listen: false)
+          .uploadImage(pickedImage);
+      _setIsUploadingImage(false);
+      setState(() {
+        widget.pet.imageUrl = newImageUrl;
+      });
+    }
+  }
+
   Future<void> _selectImageFromGallery() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
@@ -107,15 +129,18 @@ class _EditPetProfileState extends State<EditPetProfile> {
               ownerId,
               fenceId!);
 
-          if(fenceId.isEmpty) {
+          if (fenceId.isEmpty) {
             try {
-              await FirebaseMessaging.instance.unsubscribeFromTopic('geofence_alerts');
+              await FirebaseMessaging.instance
+                  .unsubscribeFromTopic('geofence_alerts');
               print('Unsubscribed from geofence_alerts topic');
             } catch (e) {
               print('Failed to unsubscribe from geofence_alerts topic: $e');
             }
-          } else{
-            FirebaseMessaging.instance.subscribeToTopic('geofence_alerts').then((value) {
+          } else {
+            FirebaseMessaging.instance
+                .subscribeToTopic('geofence_alerts')
+                .then((value) {
               print('Subscribed to geofence_alerts topic!');
             }).catchError((error) {
               print('Failed to subscribe to geofence_alerts topic: $error');
@@ -190,6 +215,29 @@ class _EditPetProfileState extends State<EditPetProfile> {
                             child: Container(
                               child: IconButton(
                                 onPressed: _selectImageFromGallery,
+                                icon: Icon(
+                                  Icons.photo_library,
+                                ),
+                                color: Colors.white,
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Colors.deepPurple.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0, 1),
+                                      blurRadius: 5,
+                                      color: Colors.deepPurple.withOpacity(0.3),
+                                    )
+                                  ]),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            child: Container(
+                              child: IconButton(
+                                onPressed: _selectImageFromCamera,
                                 icon: Icon(
                                   Icons.camera_alt_outlined,
                                 ),

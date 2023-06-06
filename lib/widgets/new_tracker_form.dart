@@ -91,9 +91,11 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
 
     Provider.of<Trackers>(context, listen: false)
         .updateTrackerDetails(_newTracker, context);
-    setState((){
+    setState(() {
       // Subscribe to geofence_alerts topic
-      FirebaseMessaging.instance.subscribeToTopic('geofence_alerts').then((value) {
+      FirebaseMessaging.instance
+          .subscribeToTopic('geofence_alerts')
+          .then((value) {
         print('Subscribed to geofence_alerts topic!');
       }).catchError((error) {
         print('Failed to subscribe to geofence_alerts topic: $error');
@@ -129,6 +131,7 @@ class _NewTrackerFormState extends State<NewTrackerForm> {
               child: Column(
                 children: [
                   TextFormField(
+                    enabled: !_isValidTrackerId,
                     controller: _trackerIdController,
                     decoration: InputDecoration(labelText: 'Tracker ID'),
                   ),

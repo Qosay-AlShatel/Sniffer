@@ -16,7 +16,7 @@ class Pet {
     required this.imageUrl,
     required this.description,
     required this.ownerId,
-    required this.fenceId, // New parameter for fenceId
+    required this.fenceId,
   });
 
   factory Pet.fromDocument(DocumentSnapshot document) {
@@ -28,8 +28,7 @@ class Pet {
       imageUrl: data['imageUrl'],
       description: data['description'],
       ownerId: data['ownerId'],
-      fenceId: data['fenceId'] ??
-          '', // Fetch fenceId from the document, defaults to an empty string if not provided
+      fenceId: data['fenceId'] ?? '',
     );
   }
 

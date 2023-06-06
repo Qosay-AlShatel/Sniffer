@@ -64,6 +64,16 @@ class Fences with ChangeNotifier {
             firestore.collection('pets').where('fenceId', isEqualTo: fence.id);
         final petsSnapshot = await petsQuery.get();
 
+        //UNSUBSCRIBE IF THERE ARE PETS USING THIS FENCE
+        if (petsSnapshot.docs.isNotEmpty) {
+          try {
+            await FirebaseMessaging.instance
+                .unsubscribeFromTopic('geofence_alerts');
+            print('Unsubscribed from geofence_alerts topic');
+          } catch (e) {
+            print('Failed to unsubscribe from geofence_alerts topic: $e');
+          }
+        }
         for (final pet in petsSnapshot.docs) {
           transaction.update(pet.reference, {'fenceId': ""});
         }
@@ -87,6 +97,31 @@ class Fences with ChangeNotifier {
 
     _fences.removeWhere((existingFence) => existingFence.id == fence.id);
     notifyListeners();
+  }
+
+  Future<void> updateFence(String id, String newTitle) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw Exception('User not found');
+      }
+
+      // Updating the fence in Firestore
+      await _firestore.collection('fences').doc(id).update({
+        'title': newTitle,
+      });
+
+      // Locally updating the fence in the fences list
+      final fenceIndex = _fences.indexWhere((fence) => fence.id == id);
+      if (fenceIndex >= 0) {
+        _fences[fenceIndex] = _fences[fenceIndex].copyWith(title: newTitle);
+        notifyListeners();
+      } else {
+        throw Exception('Fence not found!');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   Future<void> addFence(Fence fence) async {
