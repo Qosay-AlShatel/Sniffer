@@ -17,6 +17,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   late Future<Marker> marker;
   bool _isLoading = false;
+  MapType _currentMapType = MapType.normal;
 
   late GoogleMapController _mapController;
   String? _selectedTracker;
@@ -170,6 +171,7 @@ class _MapPageState extends State<MapPage> {
                           ),
                           markers: markers,
                           polygons: polygons,
+                          mapType: _currentMapType,
                         );
                       }
                     } else {
@@ -177,7 +179,21 @@ class _MapPageState extends State<MapPage> {
                       return Container();
                     }
                   },
-                )
+                ),
+                Positioned(
+                  left: 10,
+                  bottom: 50,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        _currentMapType = _currentMapType == MapType.normal
+                            ? MapType.satellite
+                            : MapType.normal;
+                      });
+                    },
+                    child: Icon(Icons.map),
+                  ),
+                ),
               ],
             ),
             bottomNavigationBar: BottomAppBar(

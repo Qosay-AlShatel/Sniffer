@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../models/fence.dart';
@@ -18,6 +15,8 @@ class FenceDetails extends StatefulWidget {
 
 class _FenceDetailsState extends State<FenceDetails> {
   bool _isLoading = false;
+  bool _isEditing = false;
+  late TextEditingController _titleController;
 
   void _setLoading(bool value) {
     setState(() {
@@ -25,28 +24,11 @@ class _FenceDetailsState extends State<FenceDetails> {
     });
   }
 
-  late final List<LatLng> _coordinates;
-  Set<Polygon> _polygons = HashSet<Polygon>();
-
   @override
   void initState() {
     super.initState();
-    _coordinates = widget.fence.coordinates;
-    _fencePolygon();
-  }
 
-  void _fencePolygon() {
-    final polygonId = PolygonId('fence_polygon');
-    final polygon = Polygon(
-      polygonId: polygonId,
-      points: _coordinates,
-      strokeWidth: 2,
-      strokeColor: Colors.deepPurple.withOpacity(0.5),
-      fillColor: Colors.deepPurple.withOpacity(0.2),
-    );
-    setState(() {
-      _polygons.add(polygon);
-    });
+    _titleController = TextEditingController(text: widget.fence.title);
   }
 
   @override
@@ -56,9 +38,9 @@ class _FenceDetailsState extends State<FenceDetails> {
           context: context,
           builder: (context) {
             return CupertinoAlertDialog(
-              title: Text("Delete ${widget.fence.title}"),
+              title: Text("Delete ${_titleController.text}"),
               content: Text(
-                  "Are you sure you want to delete ${widget.fence.title}? This action is not reversible."),
+                  "Are you sure you want to delete ${_titleController.text}? This action is not reversible."),
               actions: [
                 CupertinoDialogAction(
                   onPressed: () async {
@@ -81,21 +63,80 @@ class _FenceDetailsState extends State<FenceDetails> {
           });
     }
 
+    void _editFence() {
+      setState(() {
+        _isEditing = true;
+      });
+    }
+
+    void _saveFence() async {
+      if (_titleController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fence title cannot be empty.')),
+        );
+        return;
+      }
+
+      _setLoading(true);
+      await Provider.of<Fences>(context, listen: false).updateFence(
+        widget.fence.id,
+        _titleController.text,
+      );
+      setState(() {
+        _isEditing = false;
+      });
+      _setLoading(false);
+    }
+
     return Stack(children: [
       Scaffold(
         appBar: AppBar(
             centerTitle: true,
-            title: Text(
-              widget.fence.title.toUpperCase(),
-              style: TextStyle(color: Colors.deepPurple),
-            ),
+            title: _isEditing
+                ? TextField(
+                    controller: _titleController,
+                    autofocus: true,
+                    onSubmitted: (_) => _saveFence(),
+                    decoration: InputDecoration(
+                      hintText: "Enter new title",
+                    ),
+                  )
+                : Text(
+                    _titleController.text.toUpperCase(),
+                    style: TextStyle(color: Colors.deepPurple),
+                  ),
             elevation: 0,
             backgroundColor: Colors.transparent,
             leading: IconButton(
-                color: Colors.deepPurple.shade300,
-                icon: Icon(Icons.close_rounded),
-                onPressed: () => Navigator.of(context).pop()),
+              color: Colors.deepPurple.shade300,
+              icon: Icon(Icons.close_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             actions: [
+              if (_isEditing)
+                IconButton(
+                  onPressed: _saveFence,
+                  icon: Icon(Icons.save),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Container(
+                  child: IconButton(
+                    onPressed: _isEditing ? _saveFence : _editFence,
+                    icon: Icon(_isEditing ? Icons.check : Icons.edit_outlined),
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.deepPurple.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(50),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 1),
+                          blurRadius: 5,
+                          color: Colors.deepPurple.withOpacity(0.3),
+                        )
+                      ]),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Container(
@@ -118,13 +159,9 @@ class _FenceDetailsState extends State<FenceDetails> {
             ]),
         body: Stack(
           children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _coordinates.first,
-                zoom: 17,
-              ),
-              polygons: _polygons,
-            ),
+            Container(
+              child: Image.network(widget.fence.imageUrl, fit: BoxFit.cover),
+            )
           ],
         ),
       ),

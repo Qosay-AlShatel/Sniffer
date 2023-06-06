@@ -63,7 +63,7 @@ class TrackerView extends StatelessWidget {
         ),
         subtitle: tracker.isDisabled
             ? Text('No pet attached')
-            : Text('Tracking ${pet?.name ?? ""}'), // Displaying the pet name
+            : Text('Tracking ${pet?.name ?? ""}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
