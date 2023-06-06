@@ -121,24 +121,23 @@ class _PetDetailsState extends State<PetDetails> {
             ]),
         body: Stack(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.red),
-                  borderRadius: BorderRadius.circular(20)),
-              alignment: Alignment.topCenter,
-              child: Positioned(
+            Positioned(
                 top: 10,
                 // left: width * 0.25,
-
-                child: SizedBox(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10.0),
+                        bottomRight: Radius.circular(10.0)),
+                    color: Colors.white,
+                    ),
                   height: height * 0.50,
-                  width: width * 0.65,
+                  width: width ,
                   child: Image.network(
                     imageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
-              ),
             ),
             // Positioned(
             //   child: Container(
@@ -186,7 +185,7 @@ class _PetDetailsState extends State<PetDetails> {
                 height: height * 0.4,
                 width: width,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.6),
+                  color: Colors.deepPurple[300],//.withOpacity(0.6),
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                     topLeft: Radius.circular(30),
@@ -247,8 +246,7 @@ class _PetDetailsState extends State<PetDetails> {
                 height: 50,
                 width: 50,
                 child: IconButton(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.white)),
+                  color: Colors.white,
                   onPressed: _deleteDialog,
                   icon: Icon(Icons.delete_forever_outlined),
                 ),
@@ -325,7 +323,9 @@ class _PetDetailsState extends State<PetDetails> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('View Fence'),
+                        Text('View Fence',
+                          style: TextStyle(fontSize: 20),
+                        ),
                         Icon(
                           Icons.maps_home_work_sharp,
                           size: 20,

@@ -51,6 +51,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _checkOnboardingStatus();
+    NotificationsHelper.initialize(flutterLocalNotificationsPlugin);
   }
 
   Future<void> _checkOnboardingStatus() async {

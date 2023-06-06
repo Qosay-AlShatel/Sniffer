@@ -74,37 +74,6 @@ class _NewFenceFormState extends State<NewFenceForm> {
       return LatLng(0, 0);
     }
   }
-
-  //@TODO add something to let user know they've reached maximum taps/less than minimum taps
-  void _onMapTapped(LatLng latLng) {
-    if (_fenceCoordinates.length >= 8) {
-      // Only allow eight points maximum
-      return;
-    }
-
-    setState(() {
-      _fenceCoordinates.add(latLng);
-      _markers.add(
-        Marker(
-          markerId: MarkerId(latLng.toString()),
-          position: latLng,
-        ),
-      );
-      //Cache the added point for undo/redo
-      pointCache = latLng;
-      // Update the polygon if there are at least 3 points
-      if (_fenceCoordinates.length >= 3) {
-        _polygons.clear();
-        _polygons.add(Polygon(
-          polygonId: PolygonId('geofence'),
-          points: _fenceCoordinates,
-          strokeWidth: 2,
-          strokeColor: Colors.deepPurple,
-          fillColor: Colors.deepPurple.withOpacity(0.2),
-        ));
-      }
-    });
-  }
   void removePoint() {
     setState(() {
       if(_fenceCoordinates.isNotEmpty) {
@@ -124,7 +93,15 @@ class _NewFenceFormState extends State<NewFenceForm> {
   }
 
   void redoPoint() {
+    if(pointCache!=null)
       _onMapTapped(pointCache);
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No points to redo'),
+        ),
+      );
+    }
   }
 
   bool _isSelfIntersecting() {
@@ -157,6 +134,74 @@ class _NewFenceFormState extends State<NewFenceForm> {
     return false;
   }
 
+  void _onMapTapped(LatLng latLng) {
+    if (_fenceCoordinates.length >= 8) {
+      // Only allow eight points maximum
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Too many points'),
+          content: Text('Maximum number of points is 8'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      ).then((_) => {
+        setState(() {
+          removePoint();
+        })
+      });
+      return;
+    }
+    if (_isSelfIntersecting()) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Invalid Point'),
+          content: Text('Please select at non-intersecting points.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      ).then((_) => {
+        setState(() {
+          removePoint();
+        })
+      });
+      return;
+    }
+
+    setState(() {
+      _fenceCoordinates.add(latLng);
+      _markers.add(
+        Marker(
+          markerId: MarkerId(latLng.toString()),
+          position: latLng,
+        ),
+      );
+      //Cache the added point for undo/redo
+      pointCache = latLng;
+      // Update the polygon if there are at least 3 points
+      if (_fenceCoordinates.length >= 3) {
+        _polygons.clear();
+        _polygons.add(Polygon(
+          polygonId: PolygonId('geofence'),
+          points: _fenceCoordinates,
+          strokeWidth: 2,
+          strokeColor: Colors.deepPurple,
+          fillColor: Colors.deepPurple.withOpacity(0.2),
+        ));
+      }
+    });
+  }
+
+
   GlobalKey _mapKey = GlobalKey();
   ui.Image? mapSnapshot;
 
@@ -179,9 +224,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
         ),
       ).then((_) => {
             setState(() {
-              _fenceCoordinates.clear();
-              _markers.clear();
-              _polygons.clear();
+              removePoint();
             })
           });
       return;

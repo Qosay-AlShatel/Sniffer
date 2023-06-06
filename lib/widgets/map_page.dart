@@ -209,7 +209,6 @@ class _MapPageState extends State<MapPage> {
                     child: Icon(Icons.map),
                   ),
                 ),
-                ),
                 if(_isOutsideGeofence)
                       Center(
                         child: Text("You pet is outside the geofence!",

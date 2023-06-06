@@ -5,19 +5,37 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class NotificationsHelper {
 
    static Future<void> initialize(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-  //   var androidSettings = new AndroidInitializationSettings('assets/images/2.png');
-  //   //var iOSSettings =new IOSInitializationSettings
-  //   var initializeSettings = new InitializationSettings(android: androidSettings);
-  //   flutterLocalNotificationsPlugin.initialize(initializationSettings);
+     var androidSettings = new AndroidInitializationSettings('mipmap/ic_launcher');
+     var iOSSettings =new DarwinInitializationSettings();
+     var initializeSettings = new InitializationSettings(android: androidSettings, iOS: iOSSettings);
+     flutterLocalNotificationsPlugin.initialize(initializeSettings);
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true
     );
 
-    FirebaseMessaging.onMessage.listen((Remote) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("onMessage listeningggg");
+      showNotification(title: message.notification?.title, body: message.notification?.body, fln: flutterLocalNotificationsPlugin);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
 
     });
+   }
+
+   static Future showNotification({var id=0, required String? title, required String? body, var paylad, required FlutterLocalNotificationsPlugin fln}) async {
+     AndroidNotificationDetails androidNotificationDetails = new AndroidNotificationDetails(
+       'geofence_alerts1',
+       'geofence_alerts',
+       playSound: true,
+       importance: Importance.max,
+       priority: Priority.high
+     );
+
+     var notif = NotificationDetails(android: androidNotificationDetails, iOS: DarwinNotificationDetails());
+     await fln.show(0, title, body, notif);
    }
 
   void subscribeToGeofenceAlerts(String tracker, BuildContext context) {
@@ -47,20 +65,6 @@ class NotificationsHelper {
     }
   }
 
-  void onMessageOpened() {
-    //Reroute on notification tapped
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("Opened...");
-      print("onAppOpened: ${message.notification?.title}/${message.notification?.body}");
-      try{
-        if(message.notification?.titleLocKey != null){
-          print("routing to map page");
-        }
-      }catch (e){
-        print("ERROR: "+e.toString());
-      }
-    });
-  }
 
 
 }
