@@ -435,17 +435,22 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        setState(() {
-                          _currentMapType = _currentMapType == MapType.normal
-                              ? MapType.satellite
-                              : MapType.normal;
-                        });
-                      },
-                      child: Icon(Icons.map),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, bottom: 80),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            _currentMapType = _currentMapType == MapType.normal
+                                ? MapType.satellite
+                                : MapType.normal;
+                          });
+                        },
+                        child: Icon(Icons.map),
+                      ),
                     ),
                   )
                 ],
