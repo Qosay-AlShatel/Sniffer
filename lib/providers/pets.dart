@@ -67,6 +67,23 @@ class Pets with ChangeNotifier {
     }
   }
 
+  Future<void> updatePetDetails(Pet pet, BuildContext context) async {
+    try {
+      await _firestore.collection('trackers').doc(pet.id).set(pet.toMap());
+
+      int index =
+          _pets.indexWhere((existingTracker) => existingTracker.id == pet.id);
+      if (index != -1) {
+        _pets[index] = pet;
+      } else {
+        _pets.add(pet);
+      }
+      notifyListeners();
+    } catch (error) {
+      print('Error updating tracker: $error');
+    }
+  }
+
   Future<Pet> addPet(Pet pet) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
