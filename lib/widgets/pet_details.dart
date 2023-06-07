@@ -248,7 +248,7 @@ class _PetDetailsState extends State<PetDetails> {
                 child: IconButton(
                   color: Colors.white,
                   onPressed: _deleteDialog,
-                  icon: Icon(Icons.delete_forever_outlined),
+                  icon: Icon(Icons.delete_outline_rounded),
                 ),
                 decoration: BoxDecoration(
                     color: Colors.deepPurple.withOpacity(0.5),
@@ -328,7 +328,7 @@ class _PetDetailsState extends State<PetDetails> {
                               children: [
                                 Text(
                                   'View Fence',
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(fontSize: 16),
                                 ),
                                 Icon(
                                   Icons.maps_home_work_sharp,
@@ -391,7 +391,7 @@ class _PetDetailsState extends State<PetDetails> {
                               children: [
                                 Text(
                                   'Add a Fence',
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(fontSize: 16),
                                 ),
                                 Icon(
                                   Icons.maps_home_work_sharp,
