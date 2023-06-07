@@ -1,4 +1,5 @@
 import 'dart:async'; // Import for StreamSubscription
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -106,6 +107,13 @@ class Trackers with ChangeNotifier {
 
       _trackers
           .removeWhere((existingTracker) => existingTracker.id == trackerId);
+      try {
+        await FirebaseMessaging.instance
+            .unsubscribeFromTopic('geofence_alerts');
+        print('Unsubscribed from geofence_alerts topic');
+      } catch (e) {
+        print('Failed to unsubscribe from geofence_alerts topic: $e');
+      }
       notifyListeners();
     } catch (e) {
       print('Error removing tracker: $e');

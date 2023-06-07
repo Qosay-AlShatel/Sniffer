@@ -28,6 +28,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  String photoURL ='';
   @override
   void initState() {
     super.initState();
@@ -35,7 +36,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         _currentUser.displayName?.split(' ').first ?? '';
     _lastNameController.text = _currentUser.displayName?.split(' ').last ?? '';
     _emailController.text = _currentUser.email ?? '';
+    photoURL = _currentUser.photoURL ?? '';
   }
+
 
   File? pickedImage;
   Future<void> _selectImageFromGallery() async {
@@ -46,10 +49,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       source: ImageSource.gallery,
     );
 
-    setState(() {
+
       if (pickedImageFile != null) {
         pickedImage = File(pickedImageFile.path);
+        String imageURL = await _uploadImage(pickedImage!);
+        photoURL=imageURL;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Picture updated successfully!'),
+          ),
+        );
       }
+    setState(()  {
     });
   }
 
@@ -94,7 +105,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             'last name': lastName,
           });
 
-          if (imageUrl.isNotEmpty) {
+          if (imageUrl != null) {
             await _firestore.collection('users').doc(_currentUser.uid).update({
               'imageUrl': imageUrl,
             });
@@ -217,8 +228,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         child: CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.transparent,
-                          backgroundImage:
-                              NetworkImage(_currentUser.photoURL.toString()),
+                          backgroundImage: NetworkImage(photoURL),
                         ),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
@@ -231,7 +241,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         right: 0,
                         child: Container(
                           child: IconButton(
-                            onPressed: _selectImageFromGallery,
+                            onPressed: () {
+                              _selectImageFromGallery();
+                              setState((){});
+                            },
                             icon: Icon(
                               Icons.camera_alt_outlined,
                             ),
