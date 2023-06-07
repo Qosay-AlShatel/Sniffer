@@ -69,8 +69,8 @@ class _EditPetProfileState extends State<EditPetProfile> {
   Future<void> _selectImageFromCamera() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
-      imageQuality: 50,
-      maxWidth: 150,
+      imageQuality: 100,
+      // maxWidth: 150,
       source: ImageSource.camera,
     );
 
@@ -91,8 +91,8 @@ class _EditPetProfileState extends State<EditPetProfile> {
   Future<void> _selectImageFromGallery() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
-      imageQuality: 50,
-      maxWidth: 150,
+      imageQuality: 100,
+      // maxWidth: 150,
       source: ImageSource.gallery,
     );
 

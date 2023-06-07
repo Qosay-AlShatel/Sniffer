@@ -53,8 +53,8 @@ class _NewPetFormState extends State<NewPetForm> {
   Future<void> _selectImageFromGallery() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
-      imageQuality: 50,
-      maxWidth: 150,
+      imageQuality: 100,
+      // maxWidth: 150,
       source: ImageSource.gallery,
     );
 
@@ -127,8 +127,8 @@ class _NewPetFormState extends State<NewPetForm> {
 
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
-      imageQuality: 50,
-      maxWidth: 150,
+      imageQuality: 100,
+      // maxWidth: 150,
       source: ImageSource.camera,
     );
 

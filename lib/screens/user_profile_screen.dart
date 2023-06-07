@@ -28,7 +28,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  String photoURL ='';
+  String photoURL = '';
   @override
   void initState() {
     super.initState();
@@ -39,29 +39,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     photoURL = _currentUser.photoURL ?? '';
   }
 
-
   File? pickedImage;
   Future<void> _selectImageFromGallery() async {
     final ImagePicker _picker = ImagePicker();
     final pickedImageFile = await _picker.pickImage(
-      imageQuality: 50,
-      maxWidth: 150,
+      imageQuality: 100,
+      // maxWidth: 150,
       source: ImageSource.gallery,
     );
 
-
-      if (pickedImageFile != null) {
-        pickedImage = File(pickedImageFile.path);
-        String imageURL = await _uploadImage(pickedImage!);
-        photoURL=imageURL;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Picture updated successfully!'),
-          ),
-        );
-      }
-    setState(()  {
-    });
+    if (pickedImageFile != null) {
+      pickedImage = File(pickedImageFile.path);
+      String imageURL = await _uploadImage(pickedImage!);
+      photoURL = imageURL;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Picture updated successfully!'),
+        ),
+      );
+    }
+    setState(() {});
   }
 
   Future<String> _uploadImage(File imageFile) async {
@@ -243,7 +240,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           child: IconButton(
                             onPressed: () {
                               _selectImageFromGallery();
-                              setState((){});
+                              setState(() {});
                             },
                             icon: Icon(
                               Icons.camera_alt_outlined,
