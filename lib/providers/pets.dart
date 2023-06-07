@@ -69,10 +69,9 @@ class Pets with ChangeNotifier {
 
   Future<void> updatePetDetails(Pet pet, BuildContext context) async {
     try {
-      await _firestore.collection('trackers').doc(pet.id).set(pet.toMap());
+      await _firestore.collection('pets').doc(pet.id).set(pet.toMap());
 
-      int index =
-          _pets.indexWhere((existingTracker) => existingTracker.id == pet.id);
+      int index = _pets.indexWhere((existingPet) => existingPet.id == pet.id);
       if (index != -1) {
         _pets[index] = pet;
       } else {
@@ -80,7 +79,7 @@ class Pets with ChangeNotifier {
       }
       notifyListeners();
     } catch (error) {
-      print('Error updating tracker: $error');
+      print('Error updating pet: $error');
     }
   }
 

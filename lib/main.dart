@@ -14,20 +14,23 @@ import 'NotificationsHelper.dart';
 import 'providers/fences.dart';
 import 'providers/trackers.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   try {
-    final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    final RemoteMessage? remoteMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
     await NotificationsHelper.initialize(flutterLocalNotificationsPlugin);
-  }catch(e) {}
+  } catch (e) {}
   // Set up the background message handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(MyApp());
 }
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message: ${message.messageId}');
 }
@@ -72,6 +75,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => Trackers()),
@@ -83,6 +88,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Sniffer',
         routes: {
@@ -119,7 +125,16 @@ class _MyAppState extends State<MyApp> {
                         } else {
                           // Show a message or a screen asking the user to verify their email
                           return Scaffold(
-                            appBar: AppBar(title: Text('Email Verification')),
+                            appBar: AppBar(
+                              title: Text('Email Verification'),
+                              actions: <Widget>[
+                                IconButton(
+                                  onPressed: () => navigatorKey.currentState!
+                                      .pushNamed(AuthScreen.routeName),
+                                  icon: Icon(Icons.arrow_back_ios_new_rounded),
+                                )
+                              ],
+                            ),
                             body: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
