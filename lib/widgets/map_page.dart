@@ -90,8 +90,6 @@ class _MapPageState extends State<MapPage> {
             fillColor: Colors.deepPurple.withOpacity(0.5),
           );
           polygons.add(selectedPolygonFence);
-          Point current = Point(x: tracker.longitude, y: tracker.latitude);
-          _isOutsideGeofence = _checkGeofence(current, selectedPolygonFence);
         }
       }
     }
@@ -209,16 +207,6 @@ class _MapPageState extends State<MapPage> {
                     child: Icon(Icons.map),
                   ),
                 ),
-                if(_isOutsideGeofence)
-                      Center(
-                        child: Text("You pet is outside the geofence!",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        ),
-                      )
-                )
               ],
             ),
             bottomNavigationBar: BottomAppBar(
@@ -251,10 +239,7 @@ class _MapPageState extends State<MapPage> {
                         _mapController.moveCamera(
                           CameraUpdate.zoomTo(17.5),
                         );
-                        Point point = Point(x: selectedTracker.latitude,
-                            y:selectedTracker.longitude);
-                        _isOutsideGeofence = _checkGeofence(point, selectedPolygonFence);
-                      },
+                                             },
                     );
                   },
                 ),

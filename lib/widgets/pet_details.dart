@@ -131,7 +131,7 @@ class _PetDetailsState extends State<PetDetails> {
                       bottomRight: Radius.circular(10.0)),
                   color: Colors.white,
                 ),
-                height: height * 0.50,
+                height: height * 0.55,
                 width: width,
                 child: Image.network(
                   imageUrl,
