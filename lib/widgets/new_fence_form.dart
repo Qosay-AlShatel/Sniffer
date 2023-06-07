@@ -436,7 +436,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 20, bottom: 80),
+                    padding: EdgeInsets.only(
+                      left: 20,
+                      bottom: 80,
+                    ),
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: FloatingActionButton(
