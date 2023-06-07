@@ -37,7 +37,7 @@ class _EditPetProfileState extends State<EditPetProfile> {
 
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController; //= TextEditingController();
-  late TextEditingController _ageController; // = TextEditingController();
+  late numberEditingController _ageController; // = TextEditingController();
   late TextEditingController _descController; // = TextEditingController();
 
   bool isInitialized = false;
@@ -305,6 +305,7 @@ class _EditPetProfileState extends State<EditPetProfile> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 20.0),
                                     child: TextFormField(
+                                      keyboardType: TextInputType.number,
                                       key: ValueKey('age'),
                                       controller: _ageController,
                                       decoration: InputDecoration(
