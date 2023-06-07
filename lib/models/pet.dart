@@ -7,7 +7,7 @@ class Pet {
   String imageUrl;
   final String description;
   final String ownerId;
-  final String fenceId; // New field for fenceId
+  String fenceId; // New field for fenceId
 
   Pet({
     required this.id,
@@ -50,5 +50,16 @@ class Pet {
       ownerId: ownerId ?? this.ownerId,
       fenceId: fenceId ?? this.fenceId,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'age': age,
+      'imageUrl': imageUrl,
+      'description': description,
+      'ownerId': ownerId,
+      'fenceId': fenceId,
+    };
   }
 }

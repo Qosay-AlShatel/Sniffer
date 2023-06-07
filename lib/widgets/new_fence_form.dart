@@ -18,6 +18,8 @@ class NewFenceForm extends StatefulWidget {
 }
 
 class _NewFenceFormState extends State<NewFenceForm> {
+  MapType _currentMapType = MapType.normal;
+
   bool _isLoading = false;
 
   void _setLoading(bool value) {
@@ -74,9 +76,11 @@ class _NewFenceFormState extends State<NewFenceForm> {
       return LatLng(0, 0);
     }
   }
+
   void removePoint() {
+    if (_fenceCoordinates.length == 1) return;
     setState(() {
-      if(_fenceCoordinates.isNotEmpty) {
+      if (_fenceCoordinates.isNotEmpty) {
         pointCache = _fenceCoordinates.removeLast();
       }
       if (_fenceCoordinates.length >= 3) {
@@ -93,7 +97,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
   }
 
   void redoPoint() {
-    if(pointCache!=null)
+    if (pointCache != null)
       _onMapTapped(pointCache);
     else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -135,7 +139,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
   }
 
   void _onMapTapped(LatLng latLng) {
-    if (_fenceCoordinates.length >= 8) {
+    if (_fenceCoordinates.length > 8) {
       // Only allow eight points maximum
       showDialog(
         context: context,
@@ -150,10 +154,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
           ],
         ),
       ).then((_) => {
-        setState(() {
-          removePoint();
-        })
-      });
+            setState(() {
+              removePoint();
+            })
+          });
       return;
     }
     if (_isSelfIntersecting()) {
@@ -161,7 +165,7 @@ class _NewFenceFormState extends State<NewFenceForm> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text('Invalid Point'),
-          content: Text('Please select at non-intersecting points.'),
+          content: Text('Please select non-intersecting points.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -170,10 +174,10 @@ class _NewFenceFormState extends State<NewFenceForm> {
           ],
         ),
       ).then((_) => {
-        setState(() {
-          removePoint();
-        })
-      });
+            setState(() {
+              removePoint();
+            })
+          });
       return;
     }
 
@@ -200,7 +204,6 @@ class _NewFenceFormState extends State<NewFenceForm> {
       }
     });
   }
-
 
   GlobalKey _mapKey = GlobalKey();
   ui.Image? mapSnapshot;
@@ -362,9 +365,9 @@ class _NewFenceFormState extends State<NewFenceForm> {
                   RepaintBoundary(
                     key: _mapKey,
                     child: GoogleMap(
+                      mapType: _currentMapType,
                       onMapCreated: _onMapCreated,
                       onTap: _onMapTapped,
-                      //markers: _markers,
                       polygons: _polygons,
                       initialCameraPosition: CameraPosition(
                         target: snapshot.data!,
@@ -406,32 +409,45 @@ class _NewFenceFormState extends State<NewFenceForm> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Row(
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple[200],
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(12)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple[200],
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(12)),
+                            onPressed: removePoint,
+                            child: Icon(Icons.arrow_back),
                           ),
-                          onPressed: removePoint,
-                          child: Icon(Icons.arrow_back),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple[200],
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(12)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple[200],
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(12)),
+                            onPressed: redoPoint,
+                            child: Icon(Icons.arrow_forward),
                           ),
-                          onPressed: redoPoint,
-                          child: Icon(Icons.arrow_forward),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentMapType = _currentMapType == MapType.normal
+                              ? MapType.satellite
+                              : MapType.normal;
+                        });
+                      },
+                      child: Icon(Icons.map),
+                    ),
+                  )
                 ],
               );
             },

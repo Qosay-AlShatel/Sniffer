@@ -55,10 +55,10 @@ class _PetDetailsState extends State<PetDetails> {
     final imageUrl = pet.imageUrl;
     final age = pet.age;
     final description = pet.description;
-
     final fenceProvider = Provider.of<Fences>(context);
     final fence = fenceProvider.findById(pet.fenceId);
-    String fenceTitle = fence!.title;
+    String fenceTitle = 'No Fence';
+    if (pet.fenceId != "") fenceTitle = fence!.title;
 
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
@@ -122,22 +122,22 @@ class _PetDetailsState extends State<PetDetails> {
         body: Stack(
           children: [
             Positioned(
-                top: 10,
-                // left: width * 0.25,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0)),
-                    color: Colors.white,
-                    ),
-                  height: height * 0.50,
-                  width: width ,
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+              top: 10,
+              // left: width * 0.25,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0)),
+                  color: Colors.white,
                 ),
+                height: height * 0.50,
+                width: width,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
             // Positioned(
             //   child: Container(
@@ -185,7 +185,7 @@ class _PetDetailsState extends State<PetDetails> {
                 height: height * 0.4,
                 width: width,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple[300],//.withOpacity(0.6),
+                  color: Colors.deepPurple[300], //.withOpacity(0.6),
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                     topLeft: Radius.circular(30),
@@ -264,86 +264,154 @@ class _PetDetailsState extends State<PetDetails> {
               SizedBox(height: 20),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return DecoratedBox(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.black.withOpacity(0.5),
-                            ),
-                            child: AlertDialog(
-                              content: Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.65,
-                                width: double.maxFinite,
-                                child: Column(
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text(
-                                          fenceTitle.toUpperCase(),
-                                          style: TextStyle(
-                                              color: Colors.deepPurple),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.close),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
+                    padding: const EdgeInsets.only(left: 8),
+                    child: pet.fenceId != ""
+                        ? ElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
-                                    Divider(
-                                      color: Colors.deepPurple,
-                                      thickness: 2,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: Image.network(
-                                          fence.imageUrl,
-                                          fit: BoxFit.cover,
+                                    child: AlertDialog(
+                                      content: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.65,
+                                        width: double.maxFinite,
+                                        child: Column(
+                                          children: <Widget>[
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: <Widget>[
+                                                Text(
+                                                  fenceTitle.toUpperCase(),
+                                                  style: TextStyle(
+                                                      color: Colors.deepPurple),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                IconButton(
+                                                  icon: Icon(Icons.close),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                            Divider(
+                                              color: Colors.deepPurple,
+                                              thickness: 2,
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                child: Image.network(
+                                                  fence!.imageUrl,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'View Fence',
+                                  style: TextStyle(fontSize: 20),
                                 ),
-                              ),
+                                Icon(
+                                  Icons.maps_home_work_sharp,
+                                  size: 20,
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('View Fence',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Icon(
-                          Icons.maps_home_work_sharp,
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: Colors.deepPurple.withOpacity(0.5),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: height * 0.02, horizontal: width * 0.05),
-                    ),
-                  ),
-                ),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor:
+                                  Colors.deepPurple.withOpacity(0.5),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: height * 0.02,
+                                  horizontal: width * 0.05),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: Text('Choose a fence'),
+                                  content: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(color: Colors.black),
+                                    ),
+                                    height: MediaQuery.of(context).size.height *
+                                        0.15,
+                                    width: double.maxFinite,
+                                    child: ListView.builder(
+                                      itemCount: fenceProvider.fences.length,
+                                      itemBuilder: (ctx, i) => ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              fenceProvider.fences[i].imageUrl),
+                                        ),
+                                        title:
+                                            Text(fenceProvider.fences[i].title),
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                          pet.fenceId =
+                                              fenceProvider.fences[i].id;
+                                          Provider.of<Pets>(context,
+                                                  listen: false)
+                                              .updatePetDetails(pet, context);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Add a Fence',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Icon(
+                                  Icons.maps_home_work_sharp,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor:
+                                  Colors.deepPurple.withOpacity(0.5),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: height * 0.02,
+                                  horizontal: width * 0.05),
+                            ),
+                          )),
               )
             ],
           ),
