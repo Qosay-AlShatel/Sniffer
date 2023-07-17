@@ -21,7 +21,7 @@ a reliable and convenient way to monitor a pet's location and ensure their safet
 
 # Installation
 
-1. Navigate to the [Releases section](https://github.com/Qosay-AlShatel/Sniffer.git/releases) of this repository.
+1. Navigate to the [Releases section](https://github.com/Qosay-AlShatel/Sniffer/releases) of this repository.
 2. Download the APK file from the latest release.
 3. Transfer the APK file to your Android device.
 4. On your device, open Settings > Security.
