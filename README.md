@@ -19,11 +19,19 @@ owner can track the pet's location in real-time, providing peace of mind and a s
 The proposed solution aims to alleviate the stress and uncertainty of pet ownership by providing 
 a reliable and convenient way to monitor a pet's location and ensure their safety
 
-# Getting Started and Installation
-To get started, clone the project into Android Studio or VSCode. Run the command:
-```flutter build apk```
+# Installation
 
-### In the ..\Sniffer\build\app\outputs\apk\release directory, you can find the app-release.apk file that can be run on your Android device.
+1. Navigate to the [Releases section](https://github.com/Qosay-AlShatel/Sniffer.git/releases) of this repository.
+2. Download the APK file from the latest release.
+3. Transfer the APK file to your Android device.
+4. On your device, open Settings > Security.
+5. Check the option "Unknown sources".
+6. Open the APK file.
+7. Tap Install.
+
+# Reporting Issues
+
+Please report any issues you encounter using the GitHub Issues feature of this repository. We appreciate your feedback and contributions!
 
 # Project Documentation
 To view the full project documentation: [Sniffer Documentation](https://github.com/Qosay-AlShatel/Sniffer/blob/main/Sniffer_Documentation.pdf)
